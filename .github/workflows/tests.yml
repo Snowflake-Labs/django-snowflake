@@ -1,0 +1,41 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  django-tests:
+    runs-on: ubuntu-latest
+    name: Django Test Suite
+    steps:
+      - name: Checkout django-snowflake
+        uses: actions/checkout@v2
+      - name: Checkout Django
+        uses: actions/checkout@v2
+        with:
+          repository: 'timgraham/django'
+          ref: 'snowflake-3.2.x'
+          path: 'django_repo'
+      - name: Install system packages for Django's Python test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libmemcached-dev
+      - name: Install Django and its Python test dependencies
+        run: |
+          cd django_repo/tests/
+          pip3 install -e ..
+          pip3 install -r requirements/py3.txt
+      - name: install the django-snowflake backend
+        run: pip3 install .
+      - name: Copy the test settings file
+        run: cp .github/workflows/snowflake_settings.py django_repo/tests/
+      - name: Run the tests
+        run: python3 django_repo/tests/runtests.py basic --settings snowflake_settings -v 2
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
