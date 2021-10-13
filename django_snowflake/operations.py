@@ -1,3 +1,5 @@
+import uuid
+
 from django.db.backends.base.operations import BaseDatabaseOperations
 
 
@@ -22,6 +24,18 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def datetime_extract_sql(self, lookup_type, field_name, tzname):
         return self.date_extract_sql(lookup_type, field_name)
+
+    def get_db_converters(self, expression):
+        converters = super().get_db_converters(expression)
+        internal_type = expression.output_field.get_internal_type()
+        if internal_type == 'UUIDField':
+            converters.append(self.convert_uuidfield_value)
+        return converters
+
+    def convert_uuidfield_value(self, value, expression, connection):
+        if value is not None:
+            value = uuid.UUID(value)
+        return value
 
     def last_insert_id(self, cursor, table_name, pk_name):
         # This is subject to race conditions.
