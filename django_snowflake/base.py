@@ -51,19 +51,19 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     }
     operators = {
         'exact': '= %s',
-        'iexact': 'ILIKE %s',
-        'contains': 'LIKE %s',
-        'icontains': 'ILIKE %s',
+        'iexact': "ILIKE %s ESCAPE '\\\\'",
+        'contains': "LIKE %s ESCAPE '\\\\'",
+        'icontains': "ILIKE %s ESCAPE '\\\\'",
         'regex': '~ %s',
         'iregex': '~* %s',
         'gt': '> %s',
         'gte': '>= %s',
         'lt': '< %s',
         'lte': '<= %s',
-        'startswith': 'LIKE %s',
-        'endswith': 'LIKE %s',
-        'istartswith': 'ILIKE %s',
-        'iendswith': 'ILIKE %s',
+        'startswith': "LIKE %s ESCAPE '\\\\'",
+        'endswith': "LIKE %s ESCAPE '\\\\'",
+        'istartswith': "ILIKE %s ESCAPE '\\\\'",
+        'iendswith': "ILIKE %s ESCAPE '\\\\'",
     }
     pattern_esc = r"{}"  # TODO: complete this expression
     pattern_ops = {

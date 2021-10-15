@@ -19,9 +19,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'lookup.tests.LookupTests.test_regex_non_ascii',
         'lookup.tests.LookupTests.test_regex_non_string',
         'lookup.tests.LookupTests.test_regex_null',
-        # text lookup escaping not implemented.
-        'lookup.tests.LookupTests.test_escaping',
-        'lookup.tests.LookupTests.test_exclude',
     }
 
     django_test_skips = {
