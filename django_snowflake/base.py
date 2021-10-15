@@ -54,8 +54,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'iexact': "ILIKE %s ESCAPE '\\\\'",
         'contains': "LIKE %s ESCAPE '\\\\'",
         'icontains': "ILIKE %s ESCAPE '\\\\'",
-        'regex': '~ %s',
-        'iregex': '~* %s',
         'gt': '> %s',
         'gte': '>= %s',
         'lt': '< %s',

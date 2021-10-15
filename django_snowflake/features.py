@@ -4,6 +4,8 @@ from django.db.backends.base.features import BaseDatabaseFeatures
 class DatabaseFeatures(BaseDatabaseFeatures):
     # Snowflake doesn't enforce foreign key constraints.
     supports_foreign_keys = False
+    # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
+    supports_regex_backreferencing = False
     # This really means "supports_nested_transactions". Snowflake supports a
     # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
     # contribute to the current (only) transaction.
@@ -13,12 +15,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     django_test_expected_failures = {
         # Subquery issue to be investigated.
         'lookup.tests.LookupTests.test_exact_exists',
-        # regex lookup not yet implemented.
+        # In Snowflake "the regex pattern is implicitly anchored at both ends
+        # (i.e. '' automatically becomes '^$')." This gives different results
+        # than other databases.
+        # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#corner-cases
         'lookup.tests.LookupTests.test_regex',
-        'lookup.tests.LookupTests.test_regex_backreferencing',
-        'lookup.tests.LookupTests.test_regex_non_ascii',
-        'lookup.tests.LookupTests.test_regex_non_string',
-        'lookup.tests.LookupTests.test_regex_null',
     }
 
     django_test_skips = {

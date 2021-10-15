@@ -44,6 +44,10 @@ class DatabaseOperations(BaseDatabaseOperations):
     def quote_name(self, name):
         return '"%s"' % name.replace('.', '"."')
 
+    def regex_lookup(self, lookup_type):
+        match_option = 'c' if lookup_type == 'regex' else 'i'
+        return "REGEXP_LIKE(%%s, %%s, '%s')" % match_option
+
     def sql_flush(self, style, tables, *, reset_sequences=False, allow_cascade=False):
         if not tables:
             return []
