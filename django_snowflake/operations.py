@@ -4,6 +4,12 @@ from django.db.backends.base.operations import BaseDatabaseOperations
 
 
 class DatabaseOperations(BaseDatabaseOperations):
+    cast_char_field_without_max_length = 'varchar'
+    cast_data_types = {
+        'AutoField': 'NUMBER',
+        'BigAutoField': 'NUMBER',
+        'SmallAutoField': 'NUMBER',
+    }
 
     def bulk_insert_sql(self, fields, placeholder_rows):
         placeholder_rows_sql = (', '.join(row) for row in placeholder_rows)

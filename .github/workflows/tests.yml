@@ -33,7 +33,7 @@ jobs:
       - name: Copy the test settings file
         run: cp .github/workflows/snowflake_settings.py django_repo/tests/
       - name: Run the tests
-        run: python3 django_repo/tests/runtests.py basic db_functions.math db_functions.text lookup --settings snowflake_settings -v 2
+        run: python3 django_repo/tests/runtests.py basic db_functions.comparison db_functions.math db_functions.text lookup --settings snowflake_settings -v 2
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}

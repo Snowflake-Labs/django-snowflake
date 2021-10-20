@@ -2,6 +2,7 @@ from django.db.backends.base.features import BaseDatabaseFeatures
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
+    has_json_object_function = False
     # Snowflake doesn't enforce foreign key constraints.
     supports_foreign_keys = False
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
@@ -35,5 +36,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'This test does not quote a field name in raw SQL as Snowflake requires.': {
             'lookup.tests.LookupTests.test_values',
             'lookup.tests.LookupTests.test_values_list',
+        },
+        "Snowflake prohibits string truncation when using Cast.": {
+            'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
     }
