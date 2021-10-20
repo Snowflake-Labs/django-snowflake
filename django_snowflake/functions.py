@@ -1,6 +1,10 @@
 from django.db.models.functions import (
-    SHA224, SHA256, SHA384, SHA512, ConcatPair, StrIndex,
+    SHA224, SHA256, SHA384, SHA512, Ceil, ConcatPair, StrIndex,
 )
+
+
+def ceil(self, compiler, connection, **extra_context):
+    return self.as_sql(compiler, connection, function='CEIL', **extra_context)
 
 
 def concatpair(self, compiler, connection, **extra_context):
@@ -22,5 +26,6 @@ def register_functions():
     SHA256.as_snowflake = SHA256.as_mysql
     SHA384.as_snowflake = SHA384.as_mysql
     SHA512.as_snowflake = SHA512.as_mysql
+    Ceil.as_snowflake = ceil
     ConcatPair.as_snowflake = concatpair
     StrIndex.as_snowflake = strindex
