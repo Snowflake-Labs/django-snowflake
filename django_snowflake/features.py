@@ -27,6 +27,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
 
     django_test_skips = {
         'Snowflake: Unsupported subquery type cannot be evaluated.': {
+            'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
         },
         'DatabaseOperations.last_executed_query must be implemented for this test.': {
@@ -39,5 +40,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         "Snowflake prohibits string truncation when using Cast.": {
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
+        },
+        'Time zone support not yet implemented.': {
+            'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests',
         },
     }

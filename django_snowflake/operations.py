@@ -16,6 +16,12 @@ class DatabaseOperations(BaseDatabaseOperations):
         values_sql = ', '.join('(%s)' % sql for sql in placeholder_rows_sql)
         return 'VALUES ' + values_sql
 
+    def datetime_cast_date_sql(self, field_name, tzname):
+        return '(%s)::date' % field_name
+
+    def datetime_cast_time_sql(self, field_name, tzname):
+        return '(%s)::time' % field_name
+
     def date_extract_sql(self, lookup_type, field_name):
         # https://docs.snowflake.com/en/sql-reference/functions-date-time.html#label-supported-date-time-parts
         if lookup_type == 'week_day':
@@ -30,6 +36,18 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def datetime_extract_sql(self, lookup_type, field_name, tzname):
         return self.date_extract_sql(lookup_type, field_name)
+
+    def date_trunc_sql(self, lookup_type, field_name, tzname=None):
+        return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
+
+    def datetime_trunc_sql(self, lookup_type, field_name, tzname):
+        return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
+
+    def time_trunc_sql(self, lookup_type, field_name, tzname=None):
+        return "DATE_TRUNC('%s', %s)::time" % (lookup_type, field_name)
+
+    def format_for_duration_arithmetic(self, sql):
+        return "INTERVAL '%s MICROSECONDS'" % sql
 
     def get_db_converters(self, expression):
         converters = super().get_db_converters(expression)
