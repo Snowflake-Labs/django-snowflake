@@ -1,17 +1,25 @@
 from django.db.backends.base.features import BaseDatabaseFeatures
+from django.utils.functional import cached_property
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
+    can_introspect_foreign_keys = False
+    can_introspect_json_field = False
     has_case_insensitive_like = False
     has_json_object_function = False
+    supports_column_check_constraints = False
+    supports_table_check_constraints = False
     # Snowflake doesn't enforce foreign key constraints.
     supports_foreign_keys = False
+    supports_index_column_ordering = False
     # Not yet implemented in this backend.
     supports_json_field = False
     supports_over_clause = True
+    supports_partial_indexes = False
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
     supports_regex_backreferencing = False
+    supports_sequence_reset = False
     # This really means "supports_nested_transactions". Snowflake supports a
     # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
     # contribute to the current (only) transaction.
@@ -52,8 +60,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'model_fields.test_binaryfield.BinaryFieldTests',
         },
         'Snowflake does not enforce UNIQUE constraints.': {
+            'inspectdb.tests.InspectDBTestCase.test_unique_together_meta',
             'model_fields.test_filefield.FileFieldTests.test_unique_when_same_filename',
             'one_to_one.tests.OneToOneTests.test_multiple_o2o',
+        },
+        'Snowflake does not create constraint and indexes.': {
+            'introspection.tests.IntrospectionTests.test_get_constraints',
+            'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
         },
         'Snowflake does not enforce PositiveIntegerField constraint.': {
             'model_fields.test_integerfield.PositiveIntegerFieldTests.test_negative_values',
@@ -106,4 +119,18 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake does not support nested transactions.': {
             'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
         },
+        'Unused DatabaseIntrospection.get_sequences() not implemented.': {
+            'introspection.tests.IntrospectionTests.test_sequence_list',
+        },
     }
+
+    @cached_property
+    def introspected_field_types(self):
+        return{
+            **super().introspected_field_types,
+            'DurationField': 'BigIntegerField',
+            'GenericIPAddressField': 'CharField',
+            'PositiveBigIntegerField': 'BigIntegerField',
+            'PositiveIntegerField': 'IntegerField',
+            'PositiveSmallIntegerField': 'SmallIntegerField',
+        }

@@ -41,6 +41,8 @@ jobs:
           db_functions
           expressions
           expressions_window
+          inspectdb
+          introspection
           lookup
           model_fields
         env:
