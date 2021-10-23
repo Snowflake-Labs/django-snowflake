@@ -2,6 +2,7 @@ from django.db.backends.base.features import BaseDatabaseFeatures
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
+    can_clone_databases = True
     has_json_object_function = False
     # Snowflake doesn't enforce foreign key constraints.
     supports_foreign_keys = False
