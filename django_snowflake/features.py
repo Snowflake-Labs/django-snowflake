@@ -43,22 +43,15 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'expressions.tests.ExpressionOperatorTests.test_lefthand_power',
         'expressions.tests.ExpressionOperatorTests.test_lefthand_transformed_field_bitwise_or',
         'expressions.tests.ExpressionOperatorTests.test_righthand_power',
-        # DatabaseOperations.format_for_duration_arithmetic() not yet implemented.
-        'expressions.tests.FTimeDeltaTests.test_date_comparison',
-        'expressions.tests.FTimeDeltaTests.test_date_minus_duration',
+        # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
-        'expressions.tests.FTimeDeltaTests.test_delta_subtract',
-        'expressions.tests.FTimeDeltaTests.test_delta_update',
+        # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
+        # doesn't accept column names.
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime',
-        'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
         'expressions.tests.FTimeDeltaTests.test_durationfield_add',
-        'expressions.tests.FTimeDeltaTests.test_exclude',
-        'expressions.tests.FTimeDeltaTests.test_invalid_operator',
-        'expressions.tests.FTimeDeltaTests.test_mixed_comparisons1',
-        'expressions.tests.FTimeDeltaTests.test_mixed_comparisons2',
-        'expressions.tests.FTimeDeltaTests.test_multiple_query_compilation',
-        'expressions.tests.FTimeDeltaTests.test_negative_timedelta_update',
-        'expressions.tests.FTimeDeltaTests.test_query_clone',
+        # Interval math off by one microsecond for years beyond ~2250:
+        # https://github.com/snowflakedb/snowflake-connector-python/issues/926
+        'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
         # AttributeError: 'Col' object has no attribute 'utcoffset'
         'expressions.tests.IterableLookupInnerExpressionsTests.test_expressions_in_lookups_join_choice',
         # Timestamp 'Col(expressions_ExPeRiMeNt, expressions.Experiment.start)' is not recognized
