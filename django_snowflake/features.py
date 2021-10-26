@@ -3,6 +3,7 @@ from django.db.backends.base.features import BaseDatabaseFeatures
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
+    has_case_insensitive_like = False
     has_json_object_function = False
     # Snowflake doesn't enforce foreign key constraints.
     supports_foreign_keys = False
@@ -32,6 +33,39 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Violating NOT NULL constraint should raise IntegrityError instead of
         # ProgrammingError: https://github.com/snowflakedb/snowflake-connector-python/issues/922
         'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
+        # Bitwise operators not yet implemented.
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_and',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_left_shift_operator',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_or',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_right_shift_operator',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_xor',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_xor_null',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_power',
+        'expressions.tests.ExpressionOperatorTests.test_lefthand_transformed_field_bitwise_or',
+        'expressions.tests.ExpressionOperatorTests.test_righthand_power',
+        # DatabaseOperations.format_for_duration_arithmetic() not yet implemented.
+        'expressions.tests.FTimeDeltaTests.test_date_comparison',
+        'expressions.tests.FTimeDeltaTests.test_date_minus_duration',
+        'expressions.tests.FTimeDeltaTests.test_delta_add',
+        'expressions.tests.FTimeDeltaTests.test_delta_subtract',
+        'expressions.tests.FTimeDeltaTests.test_delta_update',
+        'expressions.tests.FTimeDeltaTests.test_duration_with_datetime',
+        'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
+        'expressions.tests.FTimeDeltaTests.test_durationfield_add',
+        'expressions.tests.FTimeDeltaTests.test_exclude',
+        'expressions.tests.FTimeDeltaTests.test_invalid_operator',
+        'expressions.tests.FTimeDeltaTests.test_mixed_comparisons1',
+        'expressions.tests.FTimeDeltaTests.test_mixed_comparisons2',
+        'expressions.tests.FTimeDeltaTests.test_multiple_query_compilation',
+        'expressions.tests.FTimeDeltaTests.test_negative_timedelta_update',
+        'expressions.tests.FTimeDeltaTests.test_query_clone',
+        # AttributeError: 'Col' object has no attribute 'utcoffset'
+        'expressions.tests.IterableLookupInnerExpressionsTests.test_expressions_in_lookups_join_choice',
+        # Timestamp 'Col(expressions_ExPeRiMeNt, expressions.Experiment.start)' is not recognized
+        'expressions.tests.IterableLookupInnerExpressionsTests.test_in_lookup_allows_F_expressions_and_expressions_for_datetimes',
+        # DatabaseWrapper.pattern_esc not implemented.
+        'expressions.tests.ExpressionsTests.test_insensitive_patterns_escape',
+        'expressions.tests.ExpressionsTests.test_patterns_escape',
     }
 
     django_test_skips = {
@@ -49,6 +83,23 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
+            'expressions.tests.BasicExpressionsTests.test_aggregate_subquery_annotation',
+            'expressions.tests.BasicExpressionsTests.test_annotation_with_nested_outerref',
+            'expressions.tests.BasicExpressionsTests.test_annotation_with_outerref',
+            'expressions.tests.BasicExpressionsTests.test_annotations_within_subquery',
+            'expressions.tests.BasicExpressionsTests.test_boolean_expression_combined',
+            'expressions.tests.BasicExpressionsTests.test_boolean_expression_combined_with_empty_Q',
+            'expressions.tests.BasicExpressionsTests.test_case_in_filter_if_boolean_output_field',
+            'expressions.tests.BasicExpressionsTests.test_exists_in_filter',
+            'expressions.tests.BasicExpressionsTests.test_nested_outerref_with_function',
+            'expressions.tests.BasicExpressionsTests.test_nested_subquery',
+            'expressions.tests.BasicExpressionsTests.test_nested_subquery_join_outer_ref',
+            'expressions.tests.BasicExpressionsTests.test_nested_subquery_outer_ref_2',
+            'expressions.tests.BasicExpressionsTests.test_nested_subquery_outer_ref_with_autofield',
+            'expressions.tests.BasicExpressionsTests.test_order_by_exists',
+            'expressions.tests.BasicExpressionsTests.test_subquery',
+            'expressions.tests.BasicExpressionsTests.test_subquery_filter_by_lazy',
+            'expressions.tests.BasicExpressionsTests.test_subquery_in_filter',
         },
         'Snowflake: Window function type [ROW_NUMBER] requires ORDER BY in '
         'window specification.': {
@@ -61,6 +112,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'This test does not quote a field name in raw SQL as Snowflake requires.': {
             'lookup.tests.LookupTests.test_values',
             'lookup.tests.LookupTests.test_values_list',
+            'expressions.tests.BasicExpressionsTests.test_filtering_on_rawsql_that_is_boolean',
+            'expressions.tests.BasicExpressionsTests.test_order_by_multiline_sql',
             'model_fields.test_booleanfield.BooleanFieldTests.test_return_type',
         },
         "Snowflake prohibits string truncation when using Cast.": {
