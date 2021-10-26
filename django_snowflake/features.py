@@ -33,16 +33,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Violating NOT NULL constraint should raise IntegrityError instead of
         # ProgrammingError: https://github.com/snowflakedb/snowflake-connector-python/issues/922
         'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
-        # Bitwise operators not yet implemented.
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_and',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_left_shift_operator',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_or',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_right_shift_operator',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_xor',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_bitwise_xor_null',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_power',
-        'expressions.tests.ExpressionOperatorTests.test_lefthand_transformed_field_bitwise_or',
-        'expressions.tests.ExpressionOperatorTests.test_righthand_power',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
