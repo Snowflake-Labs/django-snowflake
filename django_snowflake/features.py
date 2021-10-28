@@ -42,10 +42,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Interval math off by one microsecond for years beyond ~2250:
         # https://github.com/snowflakedb/snowflake-connector-python/issues/926
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
-        # AttributeError: 'Col' object has no attribute 'utcoffset'
-        'expressions.tests.IterableLookupInnerExpressionsTests.test_expressions_in_lookups_join_choice',
-        # Timestamp 'Col(expressions_ExPeRiMeNt, expressions.Experiment.start)' is not recognized
-        'expressions.tests.IterableLookupInnerExpressionsTests.test_in_lookup_allows_F_expressions_and_expressions_for_datetimes',
         # DatabaseWrapper.pattern_esc not implemented.
         'expressions.tests.ExpressionsTests.test_insensitive_patterns_escape',
         'expressions.tests.ExpressionsTests.test_patterns_escape',
