@@ -5,17 +5,27 @@ from django.utils.functional import cached_property
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
+    # Not yet implemented.
+    can_create_inline_fk = False
     can_introspect_json_field = False
     # This should be InterfaceError:
     # https://github.com/snowflakedb/snowflake-connector-python/issues/943
     closed_cursor_error_class = DatabaseError
+    # This feature is specific to the Django fork used for testing.
+    enforces_foreign_key_constraints = False
+    # This feature is specific to the Django fork used for testing.
+    enforces_unique_constraints = False
     has_case_insensitive_like = False
     has_json_object_function = False
+    indexes_foreign_keys = False
     nulls_order_largest = True
     supported_explain_formats = {'JSON', 'TABULAR', 'TEXT'}
     supports_column_check_constraints = False
     supports_table_check_constraints = False
+    supports_expression_indexes = False
     supports_ignore_conflicts = False
+    # This feature is specific to the Django fork used for testing.
+    supports_indexes = False
     supports_index_column_ordering = False
     # Not yet implemented in this backend.
     supports_json_field = False
@@ -55,6 +65,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Violating NOT NULL constraint should raise IntegrityError instead of
         # ProgrammingError: https://github.com/snowflakedb/snowflake-connector-python/issues/922
         'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
+        'schema.tests.SchemaTests.test_alter_numeric_field_keep_null_status',
+        'schema.tests.SchemaTests.test_rename_keep_null_status',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
@@ -81,6 +93,36 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Cursor.execute() fails to interpolate SQL when params=():
         # https://github.com/snowflakedb/snowflake-connector-python/issues/961
         'queries.tests.Queries5Tests.test_extra_select_literal_percent_s',
+        # Default value data type does not match data type for column dob_auto_now
+        'schema.tests.SchemaTests.test_add_datefield_and_datetimefield_use_effective_default',
+        # Default values are not allowed on 'BINARY' columns.
+        'schema.tests.SchemaTests.test_add_field_binary',
+        # Dropping default value is not allowed for column '<foo>' because
+        # the column was added after table was created.
+        'schema.tests.SchemaTests.test_add_field_default_dropped',
+        'schema.tests.SchemaTests.test_add_field_default_transform',
+        'schema.tests.SchemaTests.test_add_field_temp_default',
+        'schema.tests.SchemaTests.test_add_field_temp_default_boolean',
+        'schema.tests.SchemaTests.test_add_field_use_effective_default',
+        'schema.tests.SchemaTests.test_add_textfield_unhashable_default',
+        # SQL compilation error due to unexpected quotes.
+        'schema.tests.SchemaTests.test_add_foreign_key_quoted_db_table',
+        'schema.tests.SchemaTests.test_alter_auto_field_quoted_db_column',
+        'schema.tests.SchemaTests.test_alter_primary_key_quoted_db_table',
+        # SQL compilation error: unexpected 'AUTOINCREMENT'.
+        'schema.tests.SchemaTests.test_alter_autofield_pk_to_bigautofield_pk_sequence_owner',
+        'schema.tests.SchemaTests.test_alter_autofield_pk_to_smallautofield_pk_sequence_owner',
+        'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
+        'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',
+        'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
+        'schema.tests.SchemaTests.test_char_field_pk_to_auto_field',
+        'schema.tests.SchemaTests.test_no_db_constraint_added_during_primary_key_change',
+        # Altering AutoField to IntegerField doesn't drop AUTOINCREMENT.
+        'schema.tests.SchemaTests.test_alter_auto_field_to_integer_field',
+        # Unsupported feature 'Alter Column Set Default'.
+        'schema.tests.SchemaTests.test_alter_field_default_dropped',
+        'schema.tests.SchemaTests.test_alter_null_to_not_null',
+        'schema.tests.SchemaTests.test_alter_text_field_to_not_null_with_default_value',
     }
 
     django_test_skips = {
@@ -100,6 +142,19 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Snowflake does not support indexes.': {
             'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
+            'schema.tests.SchemaTests.test_add_remove_index',
+            'schema.tests.SchemaTests.test_alter_field_add_index_to_integerfield',
+            'schema.tests.SchemaTests.test_create_index_together',
+            'schema.tests.SchemaTests.test_index_together',
+            'schema.tests.SchemaTests.test_index_together_with_fk',
+            'schema.tests.SchemaTests.test_indexes',
+            'schema.tests.SchemaTests.test_order_index',
+            'schema.tests.SchemaTests.test_remove_constraints_capital_letters',
+            'schema.tests.SchemaTests.test_remove_db_index_doesnt_remove_custom_indexes',
+            'schema.tests.SchemaTests.test_remove_field_unique_does_not_remove_meta_constraints',
+            'schema.tests.SchemaTests.test_remove_index_together_does_not_remove_meta_indexes',
+            'schema.tests.SchemaTests.test_remove_unique_together_does_not_remove_meta_constraints',
+            'schema.tests.SchemaTests.test_text_field_with_db_index',
         },
         'Snowflake does not enforce PositiveIntegerField constraint.': {
             'model_fields.test_integerfield.PositiveIntegerFieldTests.test_negative_values',
@@ -223,6 +278,27 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'snowflake-connector-python returns datetimes with timezone': {
             'timezones.tests.LegacyDatabaseTests.test_cursor_execute_returns_naive_datetime',
+        },
+        'Snowflake: cannot change column type.': {
+            # NUMBER to VARCHAR
+            'schema.tests.SchemaTests.test_alter_auto_field_to_char_field',
+            # VARCHAR to DATE
+            'schema.tests.SchemaTests.test_alter_text_field_to_date_field',
+            # VARCHAR TO TIMESTAMP
+            'schema.tests.SchemaTests.test_alter_text_field_to_datetime_field',
+            # VARCHAR to TIME
+            'schema.tests.SchemaTests.test_alter_text_field_to_time_field',
+            # VARCHAR to NUMBER
+            'schema.tests.SchemaTests.test_char_field_with_db_index_to_fk',
+            'schema.tests.SchemaTests.test_text_field_with_db_index_to_fk',
+        },
+        'Snowflake: reducing the byte-length of a varchar is not supported.': {
+            'schema.tests.SchemaTests.test_alter_textual_field_keep_null_status',
+            'schema.tests.SchemaTests.test_m2m_rename_field_in_target_model',
+            'schema.tests.SchemaTests.test_rename',
+        },
+        'Collation support not yet implemented.': {
+            'schema.tests.SchemaTests.test_ci_cs_db_collation',
         },
     }
 

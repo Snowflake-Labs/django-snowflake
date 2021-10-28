@@ -51,6 +51,7 @@ jobs:
           lookup
           model_fields
           queries
+          schema
           timezones
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
