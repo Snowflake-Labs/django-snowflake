@@ -5,6 +5,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_json_object_function = False
     # Snowflake doesn't enforce foreign key constraints.
     supports_foreign_keys = False
+    # Not yet implemented in this backend.
+    supports_json_field = False
+    supports_over_clause = True
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
     supports_regex_backreferencing = False
     # This really means "supports_nested_transactions". Snowflake supports a
@@ -28,7 +31,12 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     django_test_skips = {
         'Snowflake: Unsupported subquery type cannot be evaluated.': {
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
+            'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
+        },
+        'Snowflake: Window function type [ROW_NUMBER] requires ORDER BY in '
+        'window specification.': {
+             'expressions_window.tests.WindowFunctionTests.test_row_number_no_ordering',
         },
         'DatabaseOperations.last_executed_query must be implemented for this test.': {
             'lookup.tests.LookupTests.test_in_ignore_none',
