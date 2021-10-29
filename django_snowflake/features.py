@@ -26,9 +26,24 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'lookup.tests.LookupTests.test_regex',
         # "Snowflake's RANDOM() returns a 64-bit integer, but Django expects [0, 1.0)"
         'db_functions.math.test_random.RandomTests.test',
+        # "Binding data in type (event) is not supported." To be investigated.
+        'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
+        # Violating NOT NULL constraint should raise IntegrityError instead of
+        # ProgrammingError: https://github.com/snowflakedb/snowflake-connector-python/issues/922
+        'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
     }
 
     django_test_skips = {
+        'BinaryField support blocked on https://github.com/snowflakedb/snowflake-connector-python/issues/907': {
+            'model_fields.test_binaryfield.BinaryFieldTests',
+        },
+        'Snowflake does not enforce UNIQUE constraints.': {
+            'model_fields.test_filefield.FileFieldTests.test_unique_when_same_filename',
+            'one_to_one.tests.OneToOneTests.test_multiple_o2o',
+        },
+        'Snowflake does not enforce PositiveIntegerField constraint.': {
+            'model_fields.test_integerfield.PositiveIntegerFieldTests.test_negative_values',
+        },
         'Snowflake: Unsupported subquery type cannot be evaluated.': {
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
@@ -45,11 +60,16 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'This test does not quote a field name in raw SQL as Snowflake requires.': {
             'lookup.tests.LookupTests.test_values',
             'lookup.tests.LookupTests.test_values_list',
+            'model_fields.test_booleanfield.BooleanFieldTests.test_return_type',
         },
         "Snowflake prohibits string truncation when using Cast.": {
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
         'Time zone support not yet implemented.': {
             'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests',
+            'model_fields.test_datetimefield.DateTimeFieldTests.test_lookup_date_with_use_tz',
+        },
+        'Snowflake does not support nested transactions.': {
+            'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
         },
     }
