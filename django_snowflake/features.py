@@ -93,18 +93,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Cursor.execute() fails to interpolate SQL when params=():
         # https://github.com/snowflakedb/snowflake-connector-python/issues/961
         'queries.tests.Queries5Tests.test_extra_select_literal_percent_s',
-        # Default value data type does not match data type for column dob_auto_now
-        'schema.tests.SchemaTests.test_add_datefield_and_datetimefield_use_effective_default',
-        # Default values are not allowed on 'BINARY' columns.
-        'schema.tests.SchemaTests.test_add_field_binary',
-        # Dropping default value is not allowed for column '<foo>' because
-        # the column was added after table was created.
-        'schema.tests.SchemaTests.test_add_field_default_dropped',
-        'schema.tests.SchemaTests.test_add_field_default_transform',
-        'schema.tests.SchemaTests.test_add_field_temp_default',
-        'schema.tests.SchemaTests.test_add_field_temp_default_boolean',
-        'schema.tests.SchemaTests.test_add_field_use_effective_default',
-        'schema.tests.SchemaTests.test_add_textfield_unhashable_default',
         # SQL compilation error due to unexpected quotes.
         'schema.tests.SchemaTests.test_add_foreign_key_quoted_db_table',
         'schema.tests.SchemaTests.test_alter_auto_field_quoted_db_column',
