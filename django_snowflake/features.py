@@ -22,6 +22,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
     supports_regex_backreferencing = False
     supports_sequence_reset = False
+    supports_subqueries_in_group_by = False
     # This really means "supports_nested_transactions". Snowflake supports a
     # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
     # contribute to the current (only) transaction.
@@ -47,6 +48,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
         # doesn't accept column names.
+        'annotations.tests.NonAggregateAnnotationTestCase.test_mixed_type_annotation_date_interval',
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime',
         'expressions.tests.FTimeDeltaTests.test_durationfield_add',
         # Interval math off by one microsecond for years beyond ~2250:
@@ -63,6 +65,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # https://github.com/snowflakedb/snowflake-connector-python/issues/939
         'backends.tests.BackendTestCase.test_cursor_executemany_with_iterator',
         'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
+        # TypeError: unsupported type for timedelta microseconds component:
+        # decimal.Decimal
+        'aggregation.tests.AggregateTestCase.test_avg_duration_field',
     }
 
     django_test_skips = {
@@ -87,6 +92,15 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'model_fields.test_integerfield.PositiveIntegerFieldTests.test_negative_values',
         },
         'Snowflake: Unsupported subquery type cannot be evaluated.': {
+            'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_multiple_subquery_annotation',  # noqa
+            'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_subquery_annotation',
+            'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation',
+            'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation_values',
+            'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation_values_collision',
+            'aggregation_regress.tests.AggregationTests.test_annotate_and_join',
+            'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_exists_aggregate_values_chaining',
+            'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_filter_with_subquery',
+            'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_subquery_outerref_transform',
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
@@ -124,6 +138,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'backends.base.test_operations.SqlFlushTests.test_execute_sql_flush_statements',
         },
         'This test does not quote a field name in raw SQL as Snowflake requires.': {
+            'aggregation_regress.tests.AggregationTests.test_annotation',
+            'aggregation_regress.tests.AggregationTests.test_more_more',
+            'aggregation_regress.tests.AggregationTests.test_more_more_more',
+            'annotations.tests.NonAggregateAnnotationTestCase.test_raw_sql_with_inherited_field',
             'lookup.tests.LookupTests.test_values',
             'lookup.tests.LookupTests.test_values_list',
             'expressions.tests.BasicExpressionsTests.test_filtering_on_rawsql_that_is_boolean',
