@@ -107,10 +107,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_no_db_constraint_added_during_primary_key_change',
         # Altering AutoField to IntegerField doesn't drop AUTOINCREMENT.
         'schema.tests.SchemaTests.test_alter_auto_field_to_integer_field',
-        # Unsupported feature 'Alter Column Set Default'.
-        'schema.tests.SchemaTests.test_alter_field_default_dropped',
-        'schema.tests.SchemaTests.test_alter_null_to_not_null',
-        'schema.tests.SchemaTests.test_alter_text_field_to_not_null_with_default_value',
     }
 
     django_test_skips = {

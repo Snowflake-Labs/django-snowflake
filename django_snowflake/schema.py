@@ -76,3 +76,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     def quote_value(self, value):
         # A more complete implementation isn't currently required.
         return str(value)
+
+    def skip_default_on_alter(self, field):
+        # Snowflake: Unsupported feature 'Alter Column Set Default'.
+        return True
