@@ -1,3 +1,4 @@
+from django.db import DatabaseError
 from django.db.backends.base.features import BaseDatabaseFeatures
 from django.utils.functional import cached_property
 
@@ -6,6 +7,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
     can_introspect_foreign_keys = False
     can_introspect_json_field = False
+    # This should be InterfaceError:
+    # https://github.com/snowflakedb/snowflake-connector-python/issues/943
+    closed_cursor_error_class = DatabaseError
     has_case_insensitive_like = False
     has_json_object_function = False
     supports_column_check_constraints = False
@@ -53,11 +57,23 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # DatabaseWrapper.pattern_esc not implemented.
         'expressions.tests.ExpressionsTests.test_insensitive_patterns_escape',
         'expressions.tests.ExpressionsTests.test_patterns_escape',
+        # Cursor.execute() raises an exception rather than passing silently if
+        # params is empty:
+        # https://github.com/snowflakedb/snowflake-connector-python/issues/939
+        'backends.tests.BackendTestCase.test_cursor_executemany_with_empty_params_list',
+        # Cursor.execute() crashes with iterators:
+        # https://github.com/snowflakedb/snowflake-connector-python/issues/939
+        'backends.tests.BackendTestCase.test_cursor_executemany_with_iterator',
+        'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
     }
 
     django_test_skips = {
         'BinaryField support blocked on https://github.com/snowflakedb/snowflake-connector-python/issues/907': {
+            'backends.tests.LastExecutedQueryTest.test_query_encoding',
             'model_fields.test_binaryfield.BinaryFieldTests',
+        },
+        'Snowflake does not enforce FOREIGN KEY constraints.': {
+            'backends.tests.FkConstraintsTests',
         },
         'Snowflake does not enforce UNIQUE constraints.': {
             'inspectdb.tests.InspectDBTestCase.test_unique_together_meta',
@@ -98,8 +114,15 @@ class DatabaseFeatures(BaseDatabaseFeatures):
              'expressions_window.tests.WindowFunctionTests.test_row_number_no_ordering',
         },
         'DatabaseOperations.last_executed_query must be implemented for this test.': {
+            'backends.tests.BackendTestCase.test_queries',
+            'backends.tests.LastExecutedQueryTest.test_last_executed_query',
+            'backends.tests.LastExecutedQueryTest.test_last_executed_query_dict',
             'lookup.tests.LookupTests.test_in_ignore_none',
             'lookup.tests.LookupTests.test_in_ignore_none_with_unhashable_items',
+        },
+        'DatabaseOperations.sequence_reset_sql() must be implemented for this test.': {
+            'backends.tests.SequenceResetTest.test_generic_relation',
+            'backends.base.test_operations.SqlFlushTests.test_execute_sql_flush_statements',
         },
         'This test does not quote a field name in raw SQL as Snowflake requires.': {
             'lookup.tests.LookupTests.test_values',
