@@ -99,6 +99,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
         'Time zone support not yet implemented.': {
+            'datetimes.tests.DateTimesTests.test_datetimes_ambiguous_and_invalid_times',
             'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests',
             'model_fields.test_datetimefield.DateTimeFieldTests.test_lookup_date_with_use_tz',
         },
