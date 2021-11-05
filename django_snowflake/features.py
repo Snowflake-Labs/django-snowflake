@@ -65,9 +65,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # https://github.com/snowflakedb/snowflake-connector-python/issues/939
         'backends.tests.BackendTestCase.test_cursor_executemany_with_iterator',
         'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
-        # TypeError: unsupported type for timedelta microseconds component:
-        # decimal.Decimal
-        'aggregation.tests.AggregateTestCase.test_avg_duration_field',
     }
 
     django_test_skips = {

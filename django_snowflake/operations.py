@@ -1,3 +1,4 @@
+import decimal
 import uuid
 
 from django.db.backends.base.operations import BaseDatabaseOperations
@@ -71,6 +72,13 @@ class DatabaseOperations(BaseDatabaseOperations):
         if internal_type == 'UUIDField':
             converters.append(self.convert_uuidfield_value)
         return converters
+
+    def convert_durationfield_value(self, value, expression, connection):
+        # Snowflake sometimes returns Decimal which is an unsupported type for
+        # timedelta microseconds component.
+        if isinstance(value, decimal.Decimal):
+            value = float(value)
+        return super().convert_durationfield_value(value, expression, connection)
 
     def convert_uuidfield_value(self, value, expression, connection):
         if value is not None:
