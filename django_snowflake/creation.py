@@ -7,7 +7,20 @@ class DatabaseCreation(BaseDatabaseCreation):
     def _quote_name(self, name):
         return self.connection.ops.quote_name(name)
 
+    def _database_exists(self, cursor, database_name):
+        try:
+            cursor.execute(f'USE DATABASE {database_name}')
+        except Exception as exc:
+            if 'Object does not exist, or operation cannot be performed.' in str(exc):
+                return False
+            raise
+        return True
+
     def _execute_create_test_db(self, cursor, parameters, keepdb=False):
+        if keepdb and self._database_exists(cursor, parameters['dbname']):
+            # If the database should be kept and it already exists, don't
+            # try to create a new one.
+            return
         super()._execute_create_test_db(cursor, parameters, keepdb)
         schema_name = self._quote_name(self.connection.settings_dict['SCHEMA'])
         cursor.execute(f'CREATE SCHEMA IF NOT EXISTS {schema_name}')
