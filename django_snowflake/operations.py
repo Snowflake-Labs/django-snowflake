@@ -126,6 +126,18 @@ class DatabaseOperations(BaseDatabaseOperations):
         # This is subject to race conditions.
         return cursor.execute(f'SELECT MAX("{pk_name}") FROM "{table_name}"').fetchone()[0]
 
+    def limit_offset_sql(self, low_mark, high_mark):
+        # This method is copied from BaseDatabaseOperations with 'LIMIT %d'
+        # replaced with 'LIMIT %s' to allow "LIMIT null" for no limit.
+        limit, offset = self._get_limit_offset_params(low_mark, high_mark)
+        return ' '.join(sql for sql in (
+            ('LIMIT %s' % limit) if limit else None,
+            ('OFFSET %d' % offset) if offset else None,
+        ) if sql)
+
+    def no_limit_value(self):
+        return 'null'
+
     def quote_name(self, name):
         return '"%s"' % name.replace('.', '"."')
 

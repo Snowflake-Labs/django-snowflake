@@ -216,11 +216,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'snowflake-connector-python returns datetimes with timezone': {
             'timezones.tests.LegacyDatabaseTests.test_cursor_execute_returns_naive_datetime',
         },
-        'DatabaseOperations.no_limit_value() not yet implemented.': {
-            'queries.tests.SubqueryTests.test_ordered_subselect',
-            'queries.tests.SubqueryTests.test_slice_subquery_and_query',
-            'queries.tests.SubqueryTests.test_sliced_delete',
-        },
     }
 
     @cached_property
