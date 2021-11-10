@@ -11,6 +11,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     closed_cursor_error_class = DatabaseError
     has_case_insensitive_like = False
     has_json_object_function = False
+    nulls_order_largest = True
     supports_column_check_constraints = False
     supports_table_check_constraints = False
     supports_ignore_conflicts = False
@@ -22,6 +23,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
     supports_regex_backreferencing = False
     supports_sequence_reset = False
+    supports_slicing_ordering_in_compound = True
     supports_subqueries_in_group_by = False
     # This really means "supports_nested_transactions". Snowflake supports a
     # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
@@ -69,6 +71,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
         # Interval math off by one hour due to crossing daylight saving time.
         'expressions.tests.FTimeDeltaTests.test_delta_update',
+        # Cursor.execute() fails to interpolate SQL when params=():
+        # https://github.com/snowflakedb/snowflake-connector-python/issues/961
+        'queries.tests.Queries5Tests.test_extra_select_literal_percent_s',
     }
 
     django_test_skips = {
@@ -122,6 +127,38 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_subquery',
             'expressions.tests.BasicExpressionsTests.test_subquery_filter_by_lazy',
             'expressions.tests.BasicExpressionsTests.test_subquery_in_filter',
+            'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_with_values_list_on_annotated_and_unannotated',  # noqa
+            'queries.tests.ExcludeTest17600.test_exclude_plain',
+            'queries.tests.ExcludeTest17600.test_exclude_plain_distinct',
+            'queries.tests.ExcludeTest17600.test_exclude_with_q_is_equal_to_plain_exclude',
+            'queries.tests.ExcludeTest17600.test_exclude_with_q_is_equal_to_plain_exclude_variation',
+            'queries.tests.ExcludeTest17600.test_exclude_with_q_object_distinct',
+            'queries.tests.ExcludeTest17600.test_exclude_with_q_object_no_distinct',
+            'queries.tests.ExcludeTests.test_exclude_multivalued_exists',
+            'queries.tests.ExcludeTests.test_exclude_subquery',
+            'queries.tests.ExcludeTests.test_subquery_exclude_outerref',
+            'queries.tests.ExcludeTests.test_ticket14511',
+            'queries.tests.ExcludeTests.test_to_field',
+            'queries.tests.ForeignKeyToBaseExcludeTests.test_ticket_21787',
+            'queries.tests.JoinReuseTest.test_inverted_q_across_relations',
+            'queries.tests.ManyToManyExcludeTest.test_exclude_many_to_many',
+            'queries.tests.ManyToManyExcludeTest.test_ticket_12823',
+            'queries.tests.Queries1Tests.test_double_exclude',
+            'queries.tests.Queries1Tests.test_exclude',
+            'queries.tests.Queries1Tests.test_exclude_in',
+            'queries.tests.Queries1Tests.test_nested_exclude',
+            'queries.tests.Queries1Tests.test_ticket7096',
+            'queries.tests.Queries1Tests.test_tickets_5324_6704',
+            'queries.tests.Queries4Tests.test_ticket24525',
+            # invalid identifier '"subquery"."col1"'
+            'queries.tests.Queries6Tests.test_distinct_ordered_sliced_subquery_aggregation',
+            'queries.tests.Queries6Tests.test_tickets_8921_9188',
+            # invalid identifier '"subquery"."dumbcategory_ptr_id"'
+            'queries.tests.SubqueryTests.test_distinct_ordered_sliced_subquery',
+            'queries.tests.TestTicket24605.test_ticket_24605',
+            'queries.tests.Ticket20788Tests.test_ticket_20788',
+            'queries.tests.Ticket22429Tests.test_ticket_22429',
+            'queries.tests.Ticket23605Tests.test_ticket_23605',
         },
         'Snowflake: Window function type [ROW_NUMBER] requires ORDER BY in '
         'window specification.': {
@@ -148,6 +185,21 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_filtering_on_rawsql_that_is_boolean',
             'expressions.tests.BasicExpressionsTests.test_order_by_multiline_sql',
             'model_fields.test_booleanfield.BooleanFieldTests.test_return_type',
+            'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_multiple_models_with_values_list_and_order_by_extra_select',  # noqa
+            'queries.tests.EscapingTests.test_ticket_7302',
+            'queries.tests.Queries5Tests.test_ordering',
+            'queries.tests.ValuesQuerysetTests.test_extra_multiple_select_params_values_order_by',
+            'queries.tests.ValuesQuerysetTests.test_extra_select_params_values_order_in_extra',
+            'queries.tests.ValuesQuerysetTests.test_extra_values',
+            'queries.tests.ValuesQuerysetTests.test_extra_values_list',
+            'queries.tests.ValuesQuerysetTests.test_extra_values_order_multiple',
+            'queries.tests.ValuesQuerysetTests.test_extra_values_order_twice',
+            'queries.tests.ValuesQuerysetTests.test_flat_extra_values_list',
+            'queries.tests.ValuesQuerysetTests.test_named_values_list_with_fields',
+            'queries.tests.ValuesQuerysetTests.test_named_values_list_without_fields',
+            'queries.tests.Queries1Tests.test_order_by_rawsql',
+            'queries.tests.Queries1Tests.test_ticket7098',
+            'queries.tests.Queries1Tests.test_tickets_7087_12242',
         },
         "Snowflake prohibits string truncation when using Cast.": {
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
@@ -163,6 +215,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'snowflake-connector-python returns datetimes with timezone': {
             'timezones.tests.LegacyDatabaseTests.test_cursor_execute_returns_naive_datetime',
+        },
+        'DatabaseOperations.no_limit_value() not yet implemented.': {
+            'queries.tests.SubqueryTests.test_ordered_subselect',
+            'queries.tests.SubqueryTests.test_slice_subquery_and_query',
+            'queries.tests.SubqueryTests.test_sliced_delete',
         },
     }
 
