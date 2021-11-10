@@ -43,9 +43,70 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         'VARCHAR': 'CharField',
     }
 
+    def get_constraints(self, cursor, table_name):
+        constraints = {}
+        # Foreign keys
+        cursor.execute(f'SHOW IMPORTED KEYS IN TABLE "{table_name}"')
+        for row in cursor.fetchall():
+            constraints[row[12]] = {
+                'columns': [row[8]],
+                'primary_key': False,
+                'unique': False,
+                'foreign_key': (row[3], row[4]),
+                'check': False,
+                'index': False,
+            }
+        # Primary keys
+        cursor.execute(f'SHOW PRIMARY KEYS IN TABLE "{table_name}"')
+        for row in cursor.fetchall():
+            constraints[row[6]] = {
+                'columns': [row[4]],
+                'primary_key': True,
+                'unique': False,
+                'foreign_key': None,
+                'check': False,
+                'index': False,
+            }
+        # Unique constraints
+        cursor.execute(f'SHOW UNIQUE KEYS IN TABLE "{table_name}"')
+        # The columns of multi-column unique indexes are ordered by row[5].
+        # Map {constraint_name: [(row[5], column_name), ...] so the columns can
+        # be sorted for each constraint.
+        unique_column_orders = {}
+        for row in cursor.fetchall():
+            column_name = row[4]
+            constraint_name = row[6]
+            if constraint_name in constraints:
+                # If the constraint name is already present, this is a
+                # multi-column unique constraint.
+                constraints[constraint_name]['columns'].append(column_name)
+                unique_column_orders[constraint_name].append((row[5], column_name))
+            else:
+                constraints[constraint_name] = {
+                    'columns': [column_name],
+                    'primary_key': False,
+                    'unique': True,
+                    'foreign_key': None,
+                    'check': False,
+                    'index': False,
+                }
+                unique_column_orders[constraint_name] = [(row[5], column_name)]
+        # Order the columns of multi-column unique indexes.
+        for constraint_name, orders in unique_column_orders.items():
+            constraints[constraint_name]['columns'] = [col for _, col in sorted(orders)]
+        return constraints
+
     def get_primary_key_column(self, cursor, table_name):
         pks = [field.name for field in self.get_table_description(cursor, table_name) if field.pk]
         return pks[0] if pks else None
+
+    def get_relations(self, cursor, table_name):
+        """
+        Return a dictionary of {field_name: (field_name_other_table, other_table)}
+        representing all foreign keys in the given table.
+        """
+        cursor.execute(f'SHOW IMPORTED KEYS IN TABLE "{table_name}"')
+        return {row[8]: (row[4], row[3]) for row in cursor.fetchall()}
 
     def get_field_type(self, data_type, description):
         field_type = super().get_field_type(data_type, description)

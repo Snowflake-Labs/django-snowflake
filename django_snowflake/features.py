@@ -5,7 +5,6 @@ from django.utils.functional import cached_property
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
-    can_introspect_foreign_keys = False
     can_introspect_json_field = False
     # This should be InterfaceError:
     # https://github.com/snowflakedb/snowflake-connector-python/issues/943
@@ -14,8 +13,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_json_object_function = False
     supports_column_check_constraints = False
     supports_table_check_constraints = False
-    # Snowflake doesn't enforce foreign key constraints.
-    supports_foreign_keys = False
     supports_index_column_ordering = False
     # Not yet implemented in this backend.
     supports_json_field = False
@@ -74,14 +71,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Snowflake does not enforce FOREIGN KEY constraints.': {
             'backends.tests.FkConstraintsTests',
+            'model_fields.test_uuid.TestAsPrimaryKeyTransactionTests.test_unsaved_fk',
         },
         'Snowflake does not enforce UNIQUE constraints.': {
-            'inspectdb.tests.InspectDBTestCase.test_unique_together_meta',
             'model_fields.test_filefield.FileFieldTests.test_unique_when_same_filename',
             'one_to_one.tests.OneToOneTests.test_multiple_o2o',
         },
-        'Snowflake does not create constraint and indexes.': {
-            'introspection.tests.IntrospectionTests.test_get_constraints',
+        'Snowflake does not support indexes.': {
             'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
         },
         'Snowflake does not enforce PositiveIntegerField constraint.': {
@@ -141,6 +137,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Snowflake does not support nested transactions.': {
             'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
+        },
+        'Unused DatabaseIntrospection.get_key_columns() not implemented.': {
+            'introspection.tests.IntrospectionTests.test_get_key_columns',
         },
         'Unused DatabaseIntrospection.get_sequences() not implemented.': {
             'introspection.tests.IntrospectionTests.test_sequence_list',
