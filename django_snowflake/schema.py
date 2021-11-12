@@ -8,12 +8,19 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         return ''
 
     def _model_indexes_sql(self, model):
-        # Snowflake doesn't use indexes.
         return []
 
     def _field_indexes_sql(self, model, field):
-        # Snowflake doesn't use indexes.
         return []
+
+    def add_index(self, model, index):
+        pass
+
+    def remove_index(self, model, index):
+        pass
+
+    def alter_index_together(self, model, old_index_together, new_index_together):
+        pass
 
     def add_field(self, model, field):
         # Special-case implicit M2M tables

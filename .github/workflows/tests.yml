@@ -49,6 +49,7 @@ jobs:
           inspectdb
           introspection
           lookup
+          migrations
           model_fields
           queries
           schema

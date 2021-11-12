@@ -98,6 +98,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_alter_auto_field_quoted_db_column',
         'schema.tests.SchemaTests.test_alter_primary_key_quoted_db_table',
         # SQL compilation error: unexpected 'AUTOINCREMENT'.
+        'migrations.test_operations.OperationTests.test_alter_field_pk',
+        'migrations.test_operations.OperationTests.test_autofield__bigautofield_foreignfield_growth',
+        'migrations.test_operations.OperationTests.test_smallfield_autofield_foreignfield_growth',
+        'migrations.test_operations.OperationTests.test_smallfield_bigautofield_foreignfield_growth',
         'schema.tests.SchemaTests.test_alter_autofield_pk_to_bigautofield_pk_sequence_owner',
         'schema.tests.SchemaTests.test_alter_autofield_pk_to_smallautofield_pk_sequence_owner',
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
@@ -114,6 +118,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'backends.tests.LastExecutedQueryTest.test_query_encoding',
             'bulk_create.tests.BulkCreateTests.test_bulk_insert_nullable_fields',
             'bulk_create.tests.BulkCreateTests.test_nullable_fk_after_parent',
+            'migrations.test_operations.OperationTests.test_add_binaryfield',
             'model_fields.test_binaryfield.BinaryFieldTests',
         },
         'Snowflake does not enforce FOREIGN KEY constraints.': {
@@ -126,6 +131,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Snowflake does not support indexes.': {
             'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
+            'migrations.test_operations.OperationTests.test_add_index',
+            'migrations.test_operations.OperationTests.test_alter_field_with_index',
+            'migrations.test_operations.OperationTests.test_alter_index_together',
+            'migrations.test_operations.OperationTests.test_remove_index',
             'schema.tests.SchemaTests.test_add_remove_index',
             'schema.tests.SchemaTests.test_alter_field_add_index_to_integerfield',
             'schema.tests.SchemaTests.test_create_index_together',
@@ -264,7 +273,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'timezones.tests.LegacyDatabaseTests.test_cursor_execute_returns_naive_datetime',
         },
         'Snowflake: cannot change column type.': {
+            # NUMBER to FLOAT
+            'migrations.test_operations.OperationTests.test_alter_field_pk_fk',
+            'migrations.test_operations.OperationTests.test_alter_fk_non_fk',
             # NUMBER to VARCHAR
+            'migrations.test_executor.ExecutorTests.test_alter_id_type_with_fk',
+            'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_related_name_target_type_change',  # noqa
+            'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_type_change',  # noqa
             'schema.tests.SchemaTests.test_alter_auto_field_to_char_field',
             # VARCHAR to DATE
             'schema.tests.SchemaTests.test_alter_text_field_to_date_field',
@@ -277,6 +292,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'schema.tests.SchemaTests.test_text_field_with_db_index_to_fk',
         },
         'Snowflake: reducing the byte-length of a varchar is not supported.': {
+            'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_target_changes',
+            'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_changes',  # noqa
+            'migrations.test_operations.OperationTests.test_rename_field_reloads_state_on_fk_target_changes',
             'schema.tests.SchemaTests.test_alter_textual_field_keep_null_status',
             'schema.tests.SchemaTests.test_m2m_rename_field_in_target_model',
             'schema.tests.SchemaTests.test_rename',
