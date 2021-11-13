@@ -39,7 +39,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         'FLOAT': 'FloatField',
         'NUMBER': 'BigIntegerField',
         'TIME': 'TimeField',
-        'TIMESTAMP_NTZ': 'DateTimeField',
+        'TIMESTAMP_LTZ': 'DateTimeField',
         'VARCHAR': 'CharField',
     }
 

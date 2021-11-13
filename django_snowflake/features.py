@@ -27,6 +27,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
     # contribute to the current (only) transaction.
     supports_transactions = False
+    # This feature is specific to the Django fork used for testing.
+    supports_tz_offsets = False
     uses_savepoints = False
 
     django_test_expected_failures = {
@@ -65,6 +67,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # https://github.com/snowflakedb/snowflake-connector-python/issues/939
         'backends.tests.BackendTestCase.test_cursor_executemany_with_iterator',
         'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
+        # Interval math off by one hour due to crossing daylight saving time.
+        'expressions.tests.FTimeDeltaTests.test_delta_update',
     }
 
     django_test_skips = {
@@ -148,11 +152,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         "Snowflake prohibits string truncation when using Cast.": {
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
-        'Time zone support not yet implemented.': {
-            'datetimes.tests.DateTimesTests.test_datetimes_ambiguous_and_invalid_times',
-            'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests',
-            'model_fields.test_datetimefield.DateTimeFieldTests.test_lookup_date_with_use_tz',
-        },
         'Snowflake does not support nested transactions.': {
             'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
         },
@@ -161,6 +160,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Unused DatabaseIntrospection.get_sequences() not implemented.': {
             'introspection.tests.IntrospectionTests.test_sequence_list',
+        },
+        'snowflake-connector-python returns datetimes with timezone': {
+            'timezones.tests.LegacyDatabaseTests.test_cursor_execute_returns_naive_datetime',
         },
     }
 

@@ -26,7 +26,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'BooleanField': 'BOOLEAN',
         'CharField': 'VARCHAR(%(max_length)s)',
         'DateField': 'DATE',
-        'DateTimeField': 'TIMESTAMPNTZ',
+        'DateTimeField': 'TIMESTAMP_LTZ',
         'DecimalField': 'NUMBER(%(max_digits)s,%(decimal_places)s)',
         'DurationField': 'NUMBER(38,0)',
         'FileField': 'VARCHAR(%(max_length)s)',
@@ -125,8 +125,25 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def get_new_connection(self, conn_params):
         return Database.connect(**conn_params)
 
+    def ensure_timezone(self):
+        if self.connection is None:
+            return False
+        with self.connection.cursor() as cursor:
+            conn_timezone_name = cursor.execute("SHOW PARAMETERS LIKE 'TIMEZONE'").fetchone()[1]
+        timezone_name = self.timezone_name
+        if timezone_name and conn_timezone_name != timezone_name:
+            with self.connection.cursor() as cursor:
+                cursor.execute("ALTER SESSION SET TIMEZONE=%s", [timezone_name])
+            return True
+        return False
+
     def init_connection_state(self):
-        pass
+        timezone_changed = self.ensure_timezone()
+        if timezone_changed:
+            # Commit after setting the time zone (see #17062)
+            # (This is copied from the postgresql backend.)
+            if not self.get_autocommit():
+                self.connection.commit()
 
     @async_unsafe
     def create_cursor(self, name=None):

@@ -1,7 +1,9 @@
 import decimal
 import uuid
 
+from django.conf import settings
 from django.db.backends.base.operations import BaseDatabaseOperations
+from django.utils import timezone
 
 
 class DatabaseOperations(BaseDatabaseOperations):
@@ -33,10 +35,20 @@ class DatabaseOperations(BaseDatabaseOperations):
             return 'POWER(%s)' % ','.join(sub_expressions)
         return super().combine_expression(connector, sub_expressions)
 
+    def _convert_field_to_tz(self, field_name, tzname):
+        if tzname and settings.USE_TZ:
+            field_name = "CONVERT_TIMEZONE('%s', TO_TIMESTAMP(%s))" % (
+                tzname,
+                field_name,
+            )
+        return field_name
+
     def datetime_cast_date_sql(self, field_name, tzname):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return '(%s)::date' % field_name
 
     def datetime_cast_time_sql(self, field_name, tzname):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return '(%s)::time' % field_name
 
     def date_extract_sql(self, lookup_type, field_name):
@@ -52,15 +64,19 @@ class DatabaseOperations(BaseDatabaseOperations):
             return "EXTRACT('%s', %s)" % (lookup_type, field_name)
 
     def datetime_extract_sql(self, lookup_type, field_name, tzname):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return self.date_extract_sql(lookup_type, field_name)
 
     def date_trunc_sql(self, lookup_type, field_name, tzname=None):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
 
     def datetime_trunc_sql(self, lookup_type, field_name, tzname):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
 
     def time_trunc_sql(self, lookup_type, field_name, tzname=None):
+        field_name = self._convert_field_to_tz(field_name, tzname)
         return "DATE_TRUNC('%s', %s)::time" % (lookup_type, field_name)
 
     def format_for_duration_arithmetic(self, sql):
@@ -69,9 +85,18 @@ class DatabaseOperations(BaseDatabaseOperations):
     def get_db_converters(self, expression):
         converters = super().get_db_converters(expression)
         internal_type = expression.output_field.get_internal_type()
-        if internal_type == 'UUIDField':
+        if internal_type == 'DateTimeField':
+            if not settings.USE_TZ:
+                converters.append(self.convert_datetimefield_value)
+        elif internal_type == 'UUIDField':
             converters.append(self.convert_uuidfield_value)
         return converters
+
+    def convert_datetimefield_value(self, value, expression, connection):
+        if value is not None:
+            # Django expects naive datetimes when settings.USE_TZ is False.
+            value = timezone.make_naive(value)
+        return value
 
     def convert_durationfield_value(self, value, expression, connection):
         # Snowflake sometimes returns Decimal which is an unsupported type for

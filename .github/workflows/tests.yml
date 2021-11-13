@@ -50,6 +50,7 @@ jobs:
           introspection
           lookup
           model_fields
+          timezones
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
