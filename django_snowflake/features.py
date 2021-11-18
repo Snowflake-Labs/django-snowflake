@@ -33,6 +33,14 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # This feature is specific to the Django fork used for testing.
     supports_tz_offsets = False
     uses_savepoints = False
+    test_collations = {
+        'ci': 'en-ci',
+        # Snowflake: case-sensitive always returns the lowercase version of a
+        # letter before the uppercase version of the same letter which isn't
+        # what CollateTests.test_collate_order_by_cs expects.
+        'cs': None,
+        'swedish_ci': 'sv-ci',
+    }
 
     django_test_expected_failures = {
         # Subquery issue to be investigated.

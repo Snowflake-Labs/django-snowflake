@@ -1,10 +1,23 @@
 from django.db.models.functions import (
-    SHA224, SHA256, SHA384, SHA512, Ceil, ConcatPair, StrIndex,
+    SHA224, SHA256, SHA384, SHA512, Ceil, Collate, ConcatPair, StrIndex,
 )
 
 
 def ceil(self, compiler, connection, **extra_context):
     return self.as_sql(compiler, connection, function='CEIL', **extra_context)
+
+
+def collate(self, compiler, connection, **extra_context):
+    # https://docs.snowflake.com/en/sql-reference/functions/collate.html
+    return self.as_sql(
+        compiler,
+        connection,
+        # Snowflake requires single quotes instead of double quotes.
+        collation=f"'{self.collation}'",
+        # COLLATE(<string_expression>, '<collation_specification>')
+        template='%(function)s(%(expressions)s, %(collation)s)',
+        **extra_context,
+    )
 
 
 def concatpair(self, compiler, connection, **extra_context):
@@ -27,5 +40,6 @@ def register_functions():
     SHA384.as_snowflake = SHA384.as_mysql
     SHA512.as_snowflake = SHA512.as_mysql
     Ceil.as_snowflake = ceil
+    Collate.as_snowflake = collate
     ConcatPair.as_snowflake = concatpair
     StrIndex.as_snowflake = strindex
