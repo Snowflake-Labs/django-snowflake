@@ -72,6 +72,9 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         # Check for fields that aren't actually columns (e.g. M2M)
         if sql is None:
             return None, None
+        collation = getattr(field, 'db_collation', None)
+        if collation:
+            sql += self._collate_sql(collation)
         if not field.null and not exclude_not_null:
             sql += " NOT NULL"
         if field.primary_key:
@@ -79,6 +82,10 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         if field.unique:
             sql += " UNIQUE"
         return sql, []
+
+    def _collate_sql(self, collation):
+        # Collation must be single quoted instead of double quoted.
+        return f" COLLATE '{collation}'"
 
     def quote_value(self, value):
         # A more complete implementation isn't currently required.

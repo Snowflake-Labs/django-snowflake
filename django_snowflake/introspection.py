@@ -6,8 +6,17 @@ from django.db.backends.base.introspection import (
 from django.utils.regex_helper import _lazy_re_compile
 
 FieldInfo = namedtuple('FieldInfo', BaseFieldInfo._fields + ('pk',))
-field_size_re = _lazy_re_compile(r'^[A-Z]+\((\d+)\)$')
+collation_re = _lazy_re_compile(r"^VARCHAR\(\d+\) COLLATE '([\w+\-]+)'$")
+field_size_re = _lazy_re_compile(r'^[A-Z]+\((\d+)\)')
 precision_and_scale_re = _lazy_re_compile(r'^NUMBER\((\d+),(\d+)\)$')
+
+
+def get_collation(name):
+    """
+    Return the collation from a "VARCHAR(11) COLLATE 'collation'" type name.
+    """
+    m = collation_re.search(name)
+    return m[1] if m else None
 
 
 def get_data_type(name):
@@ -141,7 +150,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 # precision, scale, null_ok, default,
                 *get_precision_and_scale(data_type), null == 'Y', default,
                 # collation, pk,
-                None, pk == 'Y',
+                get_collation(data_type), pk == 'Y',
             )
             for (
                 name, data_type, kind, null, default, pk, unique_key, check,

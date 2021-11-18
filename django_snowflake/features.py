@@ -49,6 +49,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # letter before the uppercase version of the same letter which isn't
         # what CollateTests.test_collate_order_by_cs expects.
         'cs': None,
+        'non_default': 'en-ci',
         'swedish_ci': 'sv-ci',
     }
 
@@ -295,11 +296,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_target_changes',
             'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_changes',  # noqa
             'migrations.test_operations.OperationTests.test_rename_field_reloads_state_on_fk_target_changes',
+            'schema.tests.SchemaTests.test_alter_field_type_and_db_collation',
             'schema.tests.SchemaTests.test_alter_textual_field_keep_null_status',
             'schema.tests.SchemaTests.test_m2m_rename_field_in_target_model',
             'schema.tests.SchemaTests.test_rename',
         },
-        'Collation support not yet implemented.': {
+        'Snowflake: cannot change column type because they have incompatible collations.': {
+            'schema.tests.SchemaTests.test_alter_field_db_collation',
             'schema.tests.SchemaTests.test_ci_cs_db_collation',
         },
     }
