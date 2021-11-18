@@ -37,6 +37,7 @@ jobs:
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
           backends
           basic
+          bulk_create
           dates
           datetimes
           db_functions

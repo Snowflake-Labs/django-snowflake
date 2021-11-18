@@ -13,6 +13,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_json_object_function = False
     supports_column_check_constraints = False
     supports_table_check_constraints = False
+    supports_ignore_conflicts = False
     supports_index_column_ordering = False
     # Not yet implemented in this backend.
     supports_json_field = False
@@ -67,6 +68,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     django_test_skips = {
         'BinaryField support blocked on https://github.com/snowflakedb/snowflake-connector-python/issues/907': {
             'backends.tests.LastExecutedQueryTest.test_query_encoding',
+            'bulk_create.tests.BulkCreateTests.test_bulk_insert_nullable_fields',
+            'bulk_create.tests.BulkCreateTests.test_nullable_fk_after_parent',
             'model_fields.test_binaryfield.BinaryFieldTests',
         },
         'Snowflake does not enforce FOREIGN KEY constraints.': {
