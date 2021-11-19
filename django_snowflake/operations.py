@@ -13,6 +13,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         'BigAutoField': 'NUMBER',
         'SmallAutoField': 'NUMBER',
     }
+    explain_prefix = 'EXPLAIN USING'
 
     def bulk_insert_sql(self, fields, placeholder_rows):
         placeholder_rows_sql = (', '.join(row) for row in placeholder_rows)
@@ -121,6 +122,12 @@ class DatabaseOperations(BaseDatabaseOperations):
         if hasattr(value, 'resolve_expression'):
             return value
         return super().adapt_timefield_value(value)
+
+    def explain_query_prefix(self, format=None, **options):
+        if format is None:
+            format = 'TABULAR'
+        prefix = super().explain_query_prefix(format, **options)
+        return prefix + ' ' + format
 
     def last_insert_id(self, cursor, table_name, pk_name):
         # This is subject to race conditions.

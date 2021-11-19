@@ -12,6 +12,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_case_insensitive_like = False
     has_json_object_function = False
     nulls_order_largest = True
+    supported_explain_formats = {'JSON', 'TABULAR', 'TEXT'}
     supports_column_check_constraints = False
     supports_table_check_constraints = False
     supports_ignore_conflicts = False
@@ -170,6 +171,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'backends.tests.LastExecutedQueryTest.test_last_executed_query_dict',
             'lookup.tests.LookupTests.test_in_ignore_none',
             'lookup.tests.LookupTests.test_in_ignore_none_with_unhashable_items',
+            'queries.test_explain.ExplainTests.test_basic',
         },
         'DatabaseOperations.sequence_reset_sql() must be implemented for this test.': {
             'backends.tests.SequenceResetTest.test_generic_relation',
