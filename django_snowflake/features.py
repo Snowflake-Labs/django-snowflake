@@ -98,18 +98,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_add_foreign_key_quoted_db_table',
         'schema.tests.SchemaTests.test_alter_auto_field_quoted_db_column',
         'schema.tests.SchemaTests.test_alter_primary_key_quoted_db_table',
-        # SQL compilation error: unexpected 'AUTOINCREMENT'.
-        'migrations.test_operations.OperationTests.test_alter_field_pk',
-        'migrations.test_operations.OperationTests.test_autofield__bigautofield_foreignfield_growth',
-        'migrations.test_operations.OperationTests.test_smallfield_autofield_foreignfield_growth',
-        'migrations.test_operations.OperationTests.test_smallfield_bigautofield_foreignfield_growth',
-        'schema.tests.SchemaTests.test_alter_autofield_pk_to_bigautofield_pk_sequence_owner',
-        'schema.tests.SchemaTests.test_alter_autofield_pk_to_smallautofield_pk_sequence_owner',
+        # Altering Integer PK to AutoField not supported.
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
         'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',
         'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
-        'schema.tests.SchemaTests.test_char_field_pk_to_auto_field',
-        'schema.tests.SchemaTests.test_no_db_constraint_added_during_primary_key_change',
         # Altering AutoField to IntegerField doesn't drop AUTOINCREMENT.
         'schema.tests.SchemaTests.test_alter_auto_field_to_integer_field',
     }
@@ -290,6 +282,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'schema.tests.SchemaTests.test_alter_text_field_to_time_field',
             # VARCHAR to NUMBER
             'schema.tests.SchemaTests.test_char_field_with_db_index_to_fk',
+            'schema.tests.SchemaTests.test_char_field_pk_to_auto_field',
             'schema.tests.SchemaTests.test_text_field_with_db_index_to_fk',
         },
         'Snowflake: reducing the byte-length of a varchar is not supported.': {

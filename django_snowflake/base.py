@@ -20,8 +20,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'snowflake'
     display_name = 'Snowflake'
     data_types = {
-        'AutoField': 'NUMBER(10,0) AUTOINCREMENT',
-        'BigAutoField': 'NUMBER(38,0) AUTOINCREMENT',
+        'AutoField': 'NUMBER(10,0)',
+        'BigAutoField': 'NUMBER(38,0)',
         'BinaryField': 'BINARY',
         'BooleanField': 'BOOLEAN',
         'CharField': 'VARCHAR(%(max_length)s)',
@@ -42,11 +42,16 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'PositiveIntegerField': 'NUMBER(10,0)',
         'PositiveSmallIntegerField': 'NUMBER(5,0)',
         'SlugField': 'VARCHAR(%(max_length)s)',
-        'SmallAutoField': 'NUMBER(5,0) AUTOINCREMENT',
+        'SmallAutoField': 'NUMBER(5,0)',
         'SmallIntegerField': 'NUMBER(5,0)',
         'TextField': 'VARCHAR',
         'TimeField': 'TIME',
         'UUIDField': 'VARCHAR(32)',
+    }
+    data_types_suffix = {
+        'AutoField': 'AUTOINCREMENT',
+        'BigAutoField': 'AUTOINCREMENT',
+        'SmallAutoField': 'AUTOINCREMENT',
     }
     operators = {
         'exact': '= %s',
