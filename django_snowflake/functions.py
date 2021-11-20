@@ -1,5 +1,6 @@
 from django.db.models.functions import (
-    SHA224, SHA256, SHA384, SHA512, Ceil, Collate, ConcatPair, StrIndex,
+    SHA224, SHA256, SHA384, SHA512, Ceil, Collate, ConcatPair, Random,
+    StrIndex,
 )
 
 
@@ -25,6 +26,11 @@ def concatpair(self, compiler, connection, **extra_context):
     return self.coalesce().as_sql(compiler, connection, **extra_context)
 
 
+def random(self, compiler, connection, **extra_context):
+    template = 'UNIFORM(0, 0.99999999999999999, RANDOM())'
+    return self.as_sql(compiler, connection, template=template, **extra_context)
+
+
 def strindex(self, compiler, connection, **extra_context):
     # POSITION takes arguments in the opposite order of other databases.
     # https://docs.snowflake.com/en/sql-reference/functions/position.html
@@ -42,4 +48,5 @@ def register_functions():
     Ceil.as_snowflake = ceil
     Collate.as_snowflake = collate
     ConcatPair.as_snowflake = concatpair
+    Random.as_snowflake = random
     StrIndex.as_snowflake = strindex

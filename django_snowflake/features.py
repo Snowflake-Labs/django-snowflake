@@ -50,8 +50,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # than other databases.
         # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#corner-cases
         'lookup.tests.LookupTests.test_regex',
-        # "Snowflake's RANDOM() returns a 64-bit integer, but Django expects [0, 1.0)"
-        'db_functions.math.test_random.RandomTests.test',
         # "Binding data in type (event) is not supported." To be investigated.
         'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
         # Violating NOT NULL constraint should raise IntegrityError instead of
