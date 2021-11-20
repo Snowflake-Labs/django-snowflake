@@ -206,14 +206,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'window specification.': {
              'expressions_window.tests.WindowFunctionTests.test_row_number_no_ordering',
         },
-        'DatabaseOperations.last_executed_query must be implemented for this test.': {
-            'backends.tests.BackendTestCase.test_queries',
-            'backends.tests.LastExecutedQueryTest.test_last_executed_query',
-            'backends.tests.LastExecutedQueryTest.test_last_executed_query_dict',
-            'lookup.tests.LookupTests.test_in_ignore_none',
-            'lookup.tests.LookupTests.test_in_ignore_none_with_unhashable_items',
-            'queries.test_explain.ExplainTests.test_basic',
-        },
         'DatabaseOperations.sequence_reset_sql() must be implemented for this test.': {
             'backends.tests.SequenceResetTest.test_generic_relation',
             'backends.base.test_operations.SqlFlushTests.test_execute_sql_flush_statements',
