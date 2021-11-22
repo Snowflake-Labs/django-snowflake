@@ -94,10 +94,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Cursor.execute() fails to interpolate SQL when params=():
         # https://github.com/snowflakedb/snowflake-connector-python/issues/961
         'queries.tests.Queries5Tests.test_extra_select_literal_percent_s',
-        # SQL compilation error due to unexpected quotes.
-        'schema.tests.SchemaTests.test_add_foreign_key_quoted_db_table',
-        'schema.tests.SchemaTests.test_alter_auto_field_quoted_db_column',
-        'schema.tests.SchemaTests.test_alter_primary_key_quoted_db_table',
         # Altering Integer PK to AutoField not supported.
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
         'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',

@@ -131,7 +131,12 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def last_insert_id(self, cursor, table_name, pk_name):
         # This is subject to race conditions.
-        return cursor.execute(f'SELECT MAX("{pk_name}") FROM "{table_name}"').fetchone()[0]
+        return cursor.execute(
+            'SELECT MAX({pk_name}) FROM {table_name}'.format(
+                pk_name=self.quote_name(pk_name),
+                table_name=self.quote_name(table_name),
+            )
+        ).fetchone()[0]
 
     def limit_offset_sql(self, low_mark, high_mark):
         # This method is copied from BaseDatabaseOperations with 'LIMIT %d'
@@ -146,6 +151,8 @@ class DatabaseOperations(BaseDatabaseOperations):
         return 'null'
 
     def quote_name(self, name):
+        if name.startswith('"') and name.endswith('"'):
+            return name  # Quoting once is enough.
         return '"%s"' % name.replace('.', '"."')
 
     def regex_lookup(self, lookup_type):
