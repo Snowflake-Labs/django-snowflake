@@ -5,8 +5,6 @@ from django.utils.functional import cached_property
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
-    # Not yet implemented.
-    can_create_inline_fk = False
     can_introspect_json_field = False
     # This should be InterfaceError:
     # https://github.com/snowflakedb/snowflake-connector-python/issues/943

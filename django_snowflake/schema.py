@@ -3,6 +3,9 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 
 class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
+    sql_create_column_inline_fk = (
+        'CONSTRAINT %(name)s FOREIGN KEY REFERENCES %(to_table)s(%(to_column)s)'
+    )
 
     def _create_index_sql(self, model, fields=None, **kwargs):
         # Snowflake doesn't use indexes.
@@ -32,6 +35,17 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         # It might not actually have a column behind it
         if definition is None:
             return
+        if field.remote_field and field.db_constraint:
+            # Add FK constraint inline.
+            constraint_suffix = '_fk_%(to_table)s_%(to_column)s'
+            to_table = field.remote_field.model._meta.db_table
+            to_column = field.remote_field.model._meta.get_field(field.remote_field.field_name).column
+            definition += " " + self.sql_create_column_inline_fk % {
+                'name': self._fk_constraint_name(model, field, constraint_suffix),
+                'column': self.quote_name(field.column),
+                'to_table': self.quote_name(to_table),
+                'to_column': self.quote_name(to_column),
+            }
         # Build the SQL and run it
         sql = self.sql_create_column % {
             "table": self.quote_name(model._meta.db_table),
