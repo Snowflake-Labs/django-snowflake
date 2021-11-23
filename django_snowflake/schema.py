@@ -1,3 +1,4 @@
+from django.db import NotSupportedError
 from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 
@@ -96,6 +97,16 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         auto_fields = self.connection.data_types_suffix
         old_internal_type = old_field.get_internal_type()
         new_internal_type = new_field.get_internal_type()
+        # Altering to an AutoField isn't supported because Snowflake doesn't
+        # support "ALTER COLUMN... SET DEFAULT" which would be need to add
+        # a sequence to the column.
+        if old_internal_type not in auto_fields and new_internal_type in auto_fields:
+            raise NotSupportedError(
+                "Changing field %(field_name)s to %(field_type)s isn't supported." % {
+                    'field_name': old_field.name,
+                    'field_type': new_internal_type,
+                }
+            )
         # If migrating away from AutoField, drop AUTOINCREMENT.
         if old_internal_type in auto_fields and new_internal_type not in auto_fields:
             self.execute(self.sql_alter_column % {
