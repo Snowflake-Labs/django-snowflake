@@ -87,6 +87,24 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         # Collation must be single quoted instead of double quoted.
         return f" COLLATE '{collation}'"
 
+    def _alter_field(self, model, old_field, new_field, old_type, new_type,
+                     old_db_params, new_db_params, strict=False):
+        super()._alter_field(
+            model, old_field, new_field, old_type, new_type,
+            old_db_params, new_db_params, strict,
+        )
+        auto_fields = self.connection.data_types_suffix
+        old_internal_type = old_field.get_internal_type()
+        new_internal_type = new_field.get_internal_type()
+        # If migrating away from AutoField, drop AUTOINCREMENT.
+        if old_internal_type in auto_fields and new_internal_type not in auto_fields:
+            self.execute(self.sql_alter_column % {
+                "table": self.quote_name(model._meta.db_table),
+                "changes": self.sql_alter_column_no_default % {
+                    "column": self.quote_name(new_field.column),
+                },
+            })
+
     def quote_value(self, value):
         # A more complete implementation isn't currently required.
         return str(value)

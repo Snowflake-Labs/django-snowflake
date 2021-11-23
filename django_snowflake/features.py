@@ -98,8 +98,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
         'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',
         'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
-        # Altering AutoField to IntegerField doesn't drop AUTOINCREMENT.
-        'schema.tests.SchemaTests.test_alter_auto_field_to_integer_field',
     }
 
     django_test_skips = {
