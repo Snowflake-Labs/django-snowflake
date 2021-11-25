@@ -180,3 +180,11 @@ class DatabaseOperations(BaseDatabaseOperations):
                 ) for table_name in tables
             )
         return sql
+
+    def subtract_temporals(self, internal_type, lhs, rhs):
+        lhs_sql, lhs_params = lhs
+        rhs_sql, rhs_params = rhs
+        if internal_type == 'TimeField':
+            # Cast rhs_sql with TO_TIME in case it's a string.
+            return f"TIMEDIFF(MICROSECOND, TO_TIME({rhs_sql}), {lhs_sql})", (*rhs_params, *lhs_params)
+        return f"TIMEDIFF(MICROSECOND, {rhs_sql}, {lhs_sql})", (*rhs_params, *lhs_params)
