@@ -34,6 +34,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_sequence_reset = False
     supports_slicing_ordering_in_compound = True
     supports_subqueries_in_group_by = False
+    supports_temporal_subtraction = True
     # This really means "supports_nested_transactions". Snowflake supports a
     # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
     # contribute to the current (only) transaction.
@@ -97,6 +98,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
         'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',
         'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
+        # Interval math with NULL crashes:
+        # https://github.com/cedar-team/django-snowflake/issues/26
+        'expressions.tests.FTimeDeltaTests.test_date_subtraction',
+        'expressions.tests.FTimeDeltaTests.test_datetime_subtraction',
+        'expressions.tests.FTimeDeltaTests.test_time_subtraction',
     }
 
     django_test_skips = {
@@ -168,6 +174,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_subquery',
             'expressions.tests.BasicExpressionsTests.test_subquery_filter_by_lazy',
             'expressions.tests.BasicExpressionsTests.test_subquery_in_filter',
+            'expressions.tests.FTimeDeltaTests.test_date_subquery_subtraction',
+            'expressions.tests.FTimeDeltaTests.test_datetime_subquery_subtraction',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_with_values_list_on_annotated_and_unannotated',  # noqa
             'queries.tests.ExcludeTest17600.test_exclude_plain',
             'queries.tests.ExcludeTest17600.test_exclude_plain_distinct',
