@@ -2,6 +2,10 @@ name: Tests
 
 on:
   pull_request:
+    paths:
+      - '**.py'
+      - '!setup.py'
+      - '.github/workflows/tests.yml'
 
 jobs:
   django-tests:
