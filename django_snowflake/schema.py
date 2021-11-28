@@ -6,6 +6,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
     sql_create_column_inline_fk = (
         'CONSTRAINT %(name)s FOREIGN KEY REFERENCES %(to_table)s(%(to_column)s)'
     )
+    sql_delete_procedure = 'DROP PROCEDURE %(procedure)s(%(param_types)s)'
 
     def _create_index_sql(self, model, fields=None, **kwargs):
         # Snowflake doesn't use indexes.
