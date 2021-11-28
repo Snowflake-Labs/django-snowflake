@@ -7,6 +7,18 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
     can_introspect_json_field = False
     closed_cursor_error_class = InterfaceError
+    create_test_procedure_without_params_sql = """
+        CREATE PROCEDURE test_procedure() RETURNS varchar LANGUAGE JAVASCRIPT AS $$
+           var i = 1;
+    $$"""
+    create_test_procedure_with_int_param_sql = """
+        CREATE OR REPLACE PROCEDURE test_procedure(value integer) RETURNS varchar LANGUAGE PYTHON
+            HANDLER = 'run'
+            RUNTIME_VERSION = '3.8'
+            PACKAGES = ('snowflake-snowpark-python')
+        AS
+        $$def run(session, value): pass
+    $$"""
     # This feature is specific to the Django fork used for testing.
     enforces_foreign_key_constraints = False
     # This feature is specific to the Django fork used for testing.
