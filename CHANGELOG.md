@@ -7,6 +7,7 @@
   version was specified).
 - Made `Cursor.execute()` interpolate SQL when `params=()`, consistent with
   other database drivers.
+- Fixed pattern lookups with `F()` expressions.
 
 ## 3.2 alpha 1 - 2021-12-02
 

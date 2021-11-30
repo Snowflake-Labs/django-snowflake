@@ -67,14 +67,14 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'istartswith': "ILIKE %s ESCAPE '\\\\'",
         'iendswith': "ILIKE %s ESCAPE '\\\\'",
     }
-    pattern_esc = r"{}"  # TODO: complete this expression
+    pattern_esc = r"REPLACE(REPLACE(REPLACE({}, '\\', '\\\\'), '%%', '\\%%'), '_', '\\_')"
     pattern_ops = {
-        'contains': "LIKE '%%' || {} || '%%'",
-        'icontains': "ILIKE '%%' || {} || '%%'",
-        'startswith': "LIKE {} || '%%'",
-        'istartswith': "ILIKE {} || '%%'",
-        'endswith': "LIKE '%%' || {}",
-        'iendswith': "ILIKE '%%' || {}",
+        'contains': "LIKE '%%' || {} || '%%' ESCAPE '\\\\'",
+        'icontains': "ILIKE '%%' || {} || '%%' ESCAPE '\\\\'",
+        'startswith': "LIKE {} || '%%' ESCAPE '\\\\'",
+        'istartswith': "ILIKE {} || '%%' ESCAPE '\\\\'",
+        'endswith': "LIKE '%%' || {} ESCAPE '\\\\'",
+        'iendswith': "ILIKE '%%' || {} ESCAPE '\\\\'",
     }
 
     Database = Database

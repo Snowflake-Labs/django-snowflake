@@ -77,9 +77,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Interval math off by one microsecond for years beyond ~2250:
         # https://github.com/snowflakedb/snowflake-connector-python/issues/926
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
-        # DatabaseWrapper.pattern_esc not implemented.
-        'expressions.tests.ExpressionsTests.test_insensitive_patterns_escape',
-        'expressions.tests.ExpressionsTests.test_patterns_escape',
         # Cursor.execute() raises an exception rather than passing silently if
         # params is empty:
         # https://github.com/snowflakedb/snowflake-connector-python/issues/939
