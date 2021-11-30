@@ -17,11 +17,10 @@ class DatabaseCreation(BaseDatabaseCreation):
         return True
 
     def _execute_create_test_db(self, cursor, parameters, keepdb=False):
-        if keepdb and self._database_exists(cursor, parameters['dbname']):
-            # If the database should be kept and it already exists, don't
-            # try to create a new one.
-            return
-        super()._execute_create_test_db(cursor, parameters, keepdb)
+        if not keepdb or not self._database_exists(cursor, parameters['dbname']):
+            # Try to create a database if keepdb=False or if keepdb=True and
+            # the database doesn't exist.
+            super()._execute_create_test_db(cursor, parameters, keepdb)
         schema_name = self._quote_name(self.connection.settings_dict['SCHEMA'])
         cursor.execute(f'CREATE SCHEMA IF NOT EXISTS {schema_name}')
 
