@@ -1,11 +1,11 @@
-name: Tests
+name: Tests II
 
 on:
   pull_request:
     paths:
       - '**.py'
       - '!setup.py'
-      - '.github/workflows/tests.yml'
+      - '.github/workflows/tests2.yml'
 
 jobs:
   django-tests:
@@ -37,26 +37,35 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
-          aggregation
-          aggregation_regress
           annotations
+          auth_tests
           backends
           basic
           bulk_create
+          cache
+          check_framework
+          constraints
+          contenttypes_tests
+          custom_columns
+          custom_lookups
+          custom_managers
+          custom_methods
+          custom_pk
+          datatypes
           dates
           datetimes
           db_functions
+          db_typecasts
+          db_utils
+          defer
+          defer_regress
+          delete
+          delete_regress
+          empty
           expressions
+          expressions_case
           expressions_window
-          field_defaults
-          inspectdb
-          introspection
-          lookup
-          migrations
-          model_fields
-          queries
-          schema
-          timezones
+          extra_regress
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}

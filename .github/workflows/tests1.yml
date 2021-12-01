@@ -1,0 +1,54 @@
+name: Tests I
+
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - '!setup.py'
+      - '.github/workflows/tests1.yml'
+
+jobs:
+  django-tests:
+    runs-on: ubuntu-latest
+    name: Django Test Suite
+    steps:
+      - name: Checkout django-snowflake
+        uses: actions/checkout@v4
+      - name: Checkout Django
+        uses: actions/checkout@v4
+        with:
+          repository: 'timgraham/django'
+          ref: 'snowflake-5.1.x'
+          path: 'django_repo'
+      - name: Install system packages for Django's Python test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libmemcached-dev
+      - name: Install Django and its Python test dependencies
+        run: |
+          pip3 install -U pip
+          cd django_repo/tests/
+          pip3 install -e ..
+          pip3 install -r requirements/py3.txt
+      - name: install the django-snowflake backend
+        run: pip3 install .
+      - name: Copy the test settings file
+        run: cp .github/workflows/snowflake_settings.py django_repo/tests/
+      - name: Run the tests
+        run: >
+          python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          admin_changelist
+          admin_custom_urls
+          admin_docs
+          admin_filters
+          admin_inlines
+          admin_ordering
+          admin_utils
+          admin_views
+          aggregation
+          aggregation_regress
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}

@@ -1,0 +1,92 @@
+name: Tests III
+
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - '!setup.py'
+      - '.github/workflows/tests3.yml'
+
+jobs:
+  django-tests:
+    runs-on: ubuntu-latest
+    name: Django Test Suite
+    steps:
+      - name: Checkout django-snowflake
+        uses: actions/checkout@v4
+      - name: Checkout Django
+        uses: actions/checkout@v4
+        with:
+          repository: 'timgraham/django'
+          ref: 'snowflake-5.1.x'
+          path: 'django_repo'
+      - name: Install system packages for Django's Python test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libmemcached-dev
+      - name: Install Django and its Python test dependencies
+        run: |
+          pip3 install -U pip
+          cd django_repo/tests/
+          pip3 install -e ..
+          pip3 install -r requirements/py3.txt
+      - name: install the django-snowflake backend
+        run: pip3 install .
+      - name: Copy the test settings file
+        run: cp .github/workflows/snowflake_settings.py django_repo/tests/
+      - name: Run the tests
+        run: >
+          python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          field_defaults
+          field_subclassing
+          file_storage
+          file_uploads
+          filtered_relation
+          force_insert_update
+          foreign_object
+          forms_tests
+          from_db_value
+          generic_inline_admin
+          generic_relations
+          generic_relations_regress
+          generic_views
+          get_earliest_or_latest
+          get_object_or_404
+          get_or_create
+          i18n
+          inline_formsets
+          inspectdb
+          introspection
+          invalid_models_tests
+          known_related_objects
+          lookup
+          m2m_and_m2o
+          m2m_intermediary
+          m2m_multiple
+          m2m_recursive
+          m2m_regress
+          m2m_signals
+          m2m_through
+          m2m_through_regress
+          m2o_recursive
+          managers_regress
+          many_to_many
+          many_to_one
+          many_to_one_null
+          max_lengths
+          migrate_signals
+          migrations
+          migration_test_data_persistence
+          modeladmin
+          model_inheritance
+          model_inheritance_regress
+          model_meta
+          model_options
+          model_package
+          model_regress
+          model_fields
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
