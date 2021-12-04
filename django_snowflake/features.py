@@ -49,10 +49,12 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'non_default': 'en-ci',
         'swedish_ci': 'sv-ci',
     }
+    test_now_utc_template = 'SYSDATE()'
 
     django_test_expected_failures = {
         # Subquery issue to be investigated.
         'lookup.tests.LookupTests.test_exact_exists',
+        'lookup.tests.LookupQueryingTests.test_filter_exists_lhs',
         # In Snowflake "the regex pattern is implicitly anchored at both ends
         # (i.e. '' automatically becomes '^$')." This gives different results
         # than other databases.
@@ -67,6 +69,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'annotations.tests.NonAggregateAnnotationTestCase.test_mixed_type_annotation_date_interval',
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime',
         'expressions.tests.FTimeDeltaTests.test_durationfield_add',
+        'expressions.tests.FTimeDeltaTests.test_durationfield_multiply_divide',
         # Interval math off by one microsecond for years beyond ~2250:
         # https://github.com/snowflakedb/snowflake-connector-python/issues/926
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
@@ -126,8 +129,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_exists_aggregate_values_chaining',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_filter_with_subquery',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_subquery_outerref_transform',
+            'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_extract_outerref',
+            'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_extract_outerref',
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
+            'lookup.tests.LookupQueryingTests.test_filter_subquery_lhs',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
             'expressions.tests.BasicExpressionsTests.test_aggregate_subquery_annotation',
             'expressions.tests.BasicExpressionsTests.test_annotation_with_nested_outerref',
@@ -135,6 +141,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_annotations_within_subquery',
             'expressions.tests.BasicExpressionsTests.test_boolean_expression_combined',
             'expressions.tests.BasicExpressionsTests.test_boolean_expression_combined_with_empty_Q',
+            'expressions.tests.BasicExpressionsTests.test_boolean_expression_in_Q',
             'expressions.tests.BasicExpressionsTests.test_case_in_filter_if_boolean_output_field',
             'expressions.tests.BasicExpressionsTests.test_exists_in_filter',
             'expressions.tests.BasicExpressionsTests.test_nested_outerref_with_function',
@@ -211,7 +218,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'migrations.test_operations.OperationTests.test_alter_fk_non_fk',
             # NUMBER to VARCHAR
             'migrations.test_executor.ExecutorTests.test_alter_id_type_with_fk',
-            'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_related_name_target_type_change',  # noqa
+            'migrations.test_operations.OperationTests.test_alter_field_reloads_state_fk_with_to_field_related_name_target_type_change',  # noqa
             'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_type_change',  # noqa
             'schema.tests.SchemaTests.test_alter_auto_field_to_char_field',
             # VARCHAR to DATE
