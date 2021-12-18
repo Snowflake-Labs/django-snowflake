@@ -106,13 +106,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     }
 
     django_test_skips = {
-        'BinaryField support blocked on https://github.com/snowflakedb/snowflake-connector-python/issues/907': {
-            'backends.tests.LastExecutedQueryTest.test_query_encoding',
-            'bulk_create.tests.BulkCreateTests.test_bulk_insert_nullable_fields',
-            'bulk_create.tests.BulkCreateTests.test_nullable_fk_after_parent',
-            'migrations.test_operations.OperationTests.test_add_binaryfield',
-            'model_fields.test_binaryfield.BinaryFieldTests',
-        },
         'Snowflake does not enforce FOREIGN KEY constraints.': {
             'backends.tests.FkConstraintsTests',
             'model_fields.test_uuid.TestAsPrimaryKeyTransactionTests.test_unsaved_fk',
