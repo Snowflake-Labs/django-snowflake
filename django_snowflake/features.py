@@ -90,9 +90,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
         # Interval math off by one hour due to crossing daylight saving time.
         'expressions.tests.FTimeDeltaTests.test_delta_update',
-        # Cursor.execute() fails to interpolate SQL when params=():
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/961
-        'queries.tests.Queries5Tests.test_extra_select_literal_percent_s',
         # Altering Integer PK to AutoField not supported.
         'migrations.test_operations.OperationTests.test_alter_field_pk',
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
