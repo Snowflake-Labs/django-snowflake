@@ -22,6 +22,10 @@ DATABASES = {
         'USER': 'my_user',
         'PASSWORD': 'my_password',
         'ACCOUNT': 'my_account',
+        # Include 'OPTIONS' if you need to specify any other
+        # snowflake.connector.connect() parameters.
+        # https://docs.snowflake.com/en/user-guide/python-connector-api.html#connect
+        'OPTIONS': {},
     },
 }
 ```

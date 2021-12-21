@@ -91,7 +91,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     def get_connection_params(self):
         settings_dict = self.settings_dict
-        conn_params = {'interpolate_empty_sequences':  True}
+        conn_params = {
+            'interpolate_empty_sequences':  True,
+            **settings_dict['OPTIONS'],
+        }
 
         if settings_dict['NAME']:
             conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])
@@ -115,9 +118,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['warehouse'] = self.ops.quote_name(settings_dict['WAREHOUSE'])
         else:
             raise ImproperlyConfigured(self.settings_is_missing % 'WAREHOUSE')
-
-        if settings_dict.get('ROLE'):
-            conn_params['role'] = self.ops.quote_name(settings_dict['ROLE'])
 
         if settings_dict.get('SCHEMA'):
             conn_params['schema'] = self.ops.quote_name(settings_dict['SCHEMA'])

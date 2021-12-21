@@ -14,24 +14,42 @@ class DatabaseClient(BaseDatabaseClient):
         dbname = settings_dict.get('NAME')
         host = settings_dict.get('HOST')
         password = settings_dict.get('PASSWORD')
-        port = settings_dict.get('PORT')
-        role = settings_dict.get('ROLE')
         schema = settings_dict.get('SCHEMA')
         user = settings_dict.get('USER')
         warehouse = settings_dict.get('WAREHOUSE')
+        # snowflake.connector.connect() parameters that have a corresponding
+        # snowsql option.
+        options = settings_dict['OPTIONS']
+        authenticator = options.get('authenticator')
+        client_session_keep_alive = options.get('client_session_keep_alive')
+        passcode = options.get('passcode')
+        passcode_in_password = options.get('passcode_in_password')
+        private_key = options.get('private_key')
+        role = options.get('role')
+        token = options.get('token')
 
         if account:
             args += ['-a', account]
+        if authenticator:
+            args += ['--authenticator', authenticator]
+        if client_session_keep_alive:
+            args += ['--client-session-keep-alive', client_session_keep_alive]
         if dbname:
             args += ['-d', dbname]
         if host:
             args += ['-h', host]
-        if port:
-            args += ['-p', port]
+        if passcode:
+            args += ['--mfa-passcode', passcode]
+        if passcode_in_password:
+            args += ['--mfa-passcode-in-password', passcode_in_password]
+        if private_key:
+            args += ['--private-key-path', private_key]
         if role:
             args += ['-r', role]
         if schema:
             args += ['-s', schema]
+        if token:
+            args += ['--token', token]
         if user:
             args += ['-u', user]
         if warehouse:
