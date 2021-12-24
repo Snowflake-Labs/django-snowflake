@@ -32,6 +32,10 @@ DATABASES = {
 
 ## Notes on Django fields
 
+- Consistent with [Snowflake's convention](https://docs.snowflake.com/en/sql-reference/identifiers-syntax.html),
+  this backend uppercases all database identifiers (table names, column names,
+  etc.) unless they are quoted, e.g. `db_table='"table_name"'`.
+
 - Snowflake supports defining foreign key and unique constraints, however, it
   doesn't enforce them. Thus, Django manages these constraints and `inspectdb`
   detects them, but Django won't raise `IntegrityError` if they're violated.
@@ -57,9 +61,6 @@ DATABASES = {
 
 * Valid values for `QuerySet.explain()`'s `format` parameter are `'json'`,
   `'tabular'`, and `'text'`. The default is `'tabular'`.
-
-* Snowflake requires field names to be quoted in `RawSQL` unless the column
-  names are uppercase.
 
 ## Known issues and limitations
 

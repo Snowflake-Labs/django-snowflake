@@ -156,7 +156,7 @@ class DatabaseOperations(BaseDatabaseOperations):
     def quote_name(self, name):
         if name.startswith('"') and name.endswith('"'):
             return name  # Quoting once is enough.
-        return '"%s"' % name.replace('.', '"."')
+        return '"%s"' % name.upper().replace('.', '"."')
 
     def regex_lookup(self, lookup_type):
         match_option = 'c' if lookup_type == 'regex' else 'i'

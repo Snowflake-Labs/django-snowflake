@@ -2,6 +2,11 @@
 
 ## 3.2 alpha 2 - Unreleased
 
+- Backwards incompatible: database identifiers (table names, column names,
+  etc.) are now uppercased by default. If you created tables with alpha 1,
+  you'll need to convert the table and column names to uppercase, or define
+  quoted lowercase table and column names on all your models, e.g.
+  `db_table='"table_name"'`.
 - Implemented `DatabaseOperations.last_executed_query()`.
 - Install now requires snowflake-connector-python 2.7.4 (previously no minimum
   version was specified).

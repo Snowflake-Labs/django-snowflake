@@ -53,23 +53,24 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
     }
 
     def get_constraints(self, cursor, table_name):
+        table_name = self.connection.ops.quote_name(table_name)
         constraints = {}
         # Foreign keys
-        cursor.execute(f'SHOW IMPORTED KEYS IN TABLE "{table_name}"')
+        cursor.execute(f'SHOW IMPORTED KEYS IN TABLE {table_name}')
         for row in cursor.fetchall():
-            constraints[row[12]] = {
-                'columns': [row[8]],
+            constraints[self.identifier_converter(row[12])] = {
+                'columns': [self.identifier_converter(row[8])],
                 'primary_key': False,
                 'unique': False,
-                'foreign_key': (row[3], row[4]),
+                'foreign_key': (self.identifier_converter(row[3]), self.identifier_converter(row[4])),
                 'check': False,
                 'index': False,
             }
         # Primary keys
-        cursor.execute(f'SHOW PRIMARY KEYS IN TABLE "{table_name}"')
+        cursor.execute(f'SHOW PRIMARY KEYS IN TABLE {table_name}')
         for row in cursor.fetchall():
-            constraints[row[6]] = {
-                'columns': [row[4]],
+            constraints[self.identifier_converter(row[6])] = {
+                'columns': [self.identifier_converter(row[4])],
                 'primary_key': True,
                 'unique': False,
                 'foreign_key': None,
@@ -77,14 +78,14 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 'index': False,
             }
         # Unique constraints
-        cursor.execute(f'SHOW UNIQUE KEYS IN TABLE "{table_name}"')
+        cursor.execute(f'SHOW UNIQUE KEYS IN TABLE {table_name}')
         # The columns of multi-column unique indexes are ordered by row[5].
         # Map {constraint_name: [(row[5], column_name), ...] so the columns can
         # be sorted for each constraint.
         unique_column_orders = {}
         for row in cursor.fetchall():
-            column_name = row[4]
-            constraint_name = row[6]
+            column_name = self.identifier_converter(row[4])
+            constraint_name = self.identifier_converter(row[6])
             if constraint_name in constraints:
                 # If the constraint name is already present, this is a
                 # multi-column unique constraint.
@@ -114,8 +115,12 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         Return a dictionary of {field_name: (field_name_other_table, other_table)}
         representing all foreign keys in the given table.
         """
-        cursor.execute(f'SHOW IMPORTED KEYS IN TABLE "{table_name}"')
-        return {row[8]: (row[4], row[3]) for row in cursor.fetchall()}
+        table_name = self.connection.ops.quote_name(table_name)
+        cursor.execute(f'SHOW IMPORTED KEYS IN TABLE {table_name}')
+        return {
+            self.identifier_converter(row[8]): (self.identifier_converter(row[4]), self.identifier_converter(row[3]))
+            for row in cursor.fetchall()
+        }
 
     def get_field_type(self, data_type, description):
         field_type = super().get_field_type(data_type, description)
@@ -145,12 +150,12 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         table_info = cursor.fetchall()
         return [
             FieldInfo(
-                # name, type_code, display_size, internal_size,
-                name, get_data_type(data_type), None, get_field_size(data_type),
-                # precision, scale, null_ok, default,
-                *get_precision_and_scale(data_type), null == 'Y', default,
-                # collation, pk,
-                get_collation(data_type), pk == 'Y',
+                # name, type_code, display_size,
+                self.identifier_converter(name), get_data_type(data_type), None,
+                # internal_size, precision, scale,
+                get_field_size(data_type), *get_precision_and_scale(data_type),
+                # null_ok, default, collation, pk,
+                null == 'Y', default, get_collation(data_type), pk == 'Y',
             )
             for (
                 name, data_type, kind, null, default, pk, unique_key, check,
@@ -158,9 +163,27 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             ) in table_info
         ]
 
+    def identifier_converter(self, name):
+        # Add quotes around Snowflake generated constraint names like
+        # SYS_CONSTRAINT_e8775210-b2d4-4947-b382-c57cecc6bb6d to preserve
+        # casing.
+        if name.startswith("SYS_CONSTRAINT_"):
+            return f'"{name}"'
+        # TODO: If the identifier field isn't uppercase, then it needs to be
+        # quoted to preserve its case.
+        # https://github.com/cedar-team/django-snowflake/issues/43
+        # This may require some changes in Django itself to work properly. This
+        # would replace the special handling of SYS_CONSTRAINT_ above.
+        # if name != name.upper():
+        #    return f'"{name}"'
+        # Otherwise, the identifier name can be lowercased for use as a model
+        # field name, for example. DatabaseOperations.quote_name() reverses
+        # this transformation by uppercasing the name.
+        return name.lower()
+
     def get_table_list(self, cursor):
         cursor.execute('SHOW TERSE TABLES')
-        tables = [TableInfo(row[1], 't') for row in cursor.fetchall()]
+        tables = [TableInfo(self.identifier_converter(row[1]), 't') for row in cursor.fetchall()]
         cursor.execute('SHOW TERSE VIEWS')
-        views = [TableInfo(row[1], 'v') for row in cursor.fetchall()]
+        views = [TableInfo(self.identifier_converter(row[1]), 'v') for row in cursor.fetchall()]
         return tables + views
