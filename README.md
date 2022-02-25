@@ -83,6 +83,3 @@ if you encounter an issue worth documenting.
 
 * Interval math with a null interval
   [crashes](https://github.com/cedar-team/django-snowflake/issues/26).
-
-* Violating a `NOT NULL` constraint [raises](https://github.com/snowflakedb/snowflake-connector-python/issues/922)
-  `ProgrammingError` rather than `IntegrityError`.

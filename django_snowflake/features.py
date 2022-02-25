@@ -1,4 +1,4 @@
-from django.db import DatabaseError
+from django.db import InterfaceError
 from django.db.backends.base.features import BaseDatabaseFeatures
 from django.utils.functional import cached_property
 
@@ -6,9 +6,7 @@ from django.utils.functional import cached_property
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
     can_introspect_json_field = False
-    # This should be InterfaceError:
-    # https://github.com/snowflakedb/snowflake-connector-python/issues/943
-    closed_cursor_error_class = DatabaseError
+    closed_cursor_error_class = InterfaceError
     # This feature is specific to the Django fork used for testing.
     enforces_foreign_key_constraints = False
     # This feature is specific to the Django fork used for testing.
@@ -62,11 +60,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'lookup.tests.LookupTests.test_regex',
         # "Binding data in type (event) is not supported." To be investigated.
         'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
-        # Violating NOT NULL constraint should raise IntegrityError instead of
-        # ProgrammingError: https://github.com/snowflakedb/snowflake-connector-python/issues/922
-        'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
-        'schema.tests.SchemaTests.test_alter_numeric_field_keep_null_status',
-        'schema.tests.SchemaTests.test_rename_keep_null_status',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
@@ -77,14 +70,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Interval math off by one microsecond for years beyond ~2250:
         # https://github.com/snowflakedb/snowflake-connector-python/issues/926
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
-        # Cursor.execute() raises an exception rather than passing silently if
-        # params is empty:
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/939
-        'backends.tests.BackendTestCase.test_cursor_executemany_with_empty_params_list',
-        # Cursor.execute() crashes with iterators:
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/939
-        'backends.tests.BackendTestCase.test_cursor_executemany_with_iterator',
-        'backends.tests.BackendTestCase.test_cursor_executemany_with_pyformat_iterator',
         # Interval math off by one hour due to crossing daylight saving time.
         'expressions.tests.FTimeDeltaTests.test_delta_update',
         # Altering Integer PK to AutoField not supported.
@@ -234,6 +219,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
         'Snowflake does not support nested transactions.': {
+            'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
             'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
         },
         'Unused DatabaseIntrospection.get_key_columns() not implemented.': {
