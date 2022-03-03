@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.2 alpha 2 - Unreleased
+## 3.2 alpha 2 - 2022-03-03
 
 - Backwards incompatible: database identifiers (table names, column names,
   etc.) are now uppercased by default. If you created tables with alpha 1,
