@@ -242,7 +242,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
 
     @cached_property
     def introspected_field_types(self):
-        return{
+        return {
             **super().introspected_field_types,
             'DurationField': 'BigIntegerField',
             'GenericIPAddressField': 'CharField',
