@@ -26,6 +26,7 @@ jobs:
           sudo apt-get install libmemcached-dev
       - name: Install Django and its Python test dependencies
         run: |
+          pip3 install -U pip
           cd django_repo/tests/
           pip3 install -e ..
           pip3 install -r requirements/py3.txt
