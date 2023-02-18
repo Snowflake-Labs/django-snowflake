@@ -70,9 +70,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime',
         'expressions.tests.FTimeDeltaTests.test_durationfield_add',
         'expressions.tests.FTimeDeltaTests.test_durationfield_multiply_divide',
-        # Interval math off by one microsecond for years beyond ~2250:
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/926
-        'expressions.tests.FTimeDeltaTests.test_duration_with_datetime_microseconds',
         # Interval math off by one hour due to crossing daylight saving time.
         'expressions.tests.FTimeDeltaTests.test_delta_update',
         # Altering Integer PK to AutoField not supported.
