@@ -35,6 +35,8 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         # It might not actually have a column behind it
         if definition is None:
             return
+        if col_type_suffix := field.db_type_suffix(connection=self.connection):
+            definition += f" {col_type_suffix}"
         if field.remote_field and field.db_constraint:
             # Add FK constraint inline.
             constraint_suffix = '_fk_%(to_table)s_%(to_column)s'
@@ -87,7 +89,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         # Check for fields that aren't actually columns (e.g. M2M)
         if sql is None:
             return None, None
-        collation = getattr(field, 'db_collation', None)
+        collation = db_params.get('collation')
         if collation:
             sql += self._collate_sql(collation)
         if not field.null and not exclude_not_null:

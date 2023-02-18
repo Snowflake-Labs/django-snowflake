@@ -3,9 +3,9 @@
 ## Install and usage
 
 Use the version of django-snowflake that corresponds to your version of
-Django. For example, to get the latest compatible release for Django 4.0.x:
+Django. For example, to get the latest compatible release for Django 4.1.x:
 
-`pip install django-snowflake==4.0.*`
+`pip install django-snowflake==4.1.*`
 
 The minor release number of Django doesn't correspond to the minor release
 number of django-snowflake. Use the latest minor release of each.

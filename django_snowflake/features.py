@@ -11,7 +11,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     enforces_foreign_key_constraints = False
     # This feature is specific to the Django fork used for testing.
     enforces_unique_constraints = False
-    has_case_insensitive_like = False
+    allows_multiple_constraints_on_same_fields = False
     has_json_object_function = False
     indexes_foreign_keys = False
     nulls_order_largest = True
@@ -67,6 +67,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
         # doesn't accept column names.
         'annotations.tests.NonAggregateAnnotationTestCase.test_mixed_type_annotation_date_interval',
+        'expressions.tests.FTimeDeltaTests.test_datetime_and_duration_field_addition_with_annotate_and_no_output_field',  # noqa
+        'expressions.tests.FTimeDeltaTests.test_datetime_and_durationfield_addition_with_filter',
         'expressions.tests.FTimeDeltaTests.test_duration_with_datetime',
         'expressions.tests.FTimeDeltaTests.test_durationfield_add',
         'expressions.tests.FTimeDeltaTests.test_durationfield_multiply_divide',
@@ -92,6 +94,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake does not enforce UNIQUE constraints.': {
             'model_fields.test_filefield.FileFieldTests.test_unique_when_same_filename',
             'one_to_one.tests.OneToOneTests.test_multiple_o2o',
+            'queries.test_bulk_update.BulkUpdateTests.test_database_routing_batch_atomicity',
         },
         'Snowflake does not support indexes.': {
             'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
@@ -99,6 +102,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'migrations.test_operations.OperationTests.test_alter_field_with_index',
             'migrations.test_operations.OperationTests.test_alter_index_together',
             'migrations.test_operations.OperationTests.test_remove_index',
+            'migrations.test_operations.OperationTests.test_rename_index',
+            'migrations.test_operations.OperationTests.test_rename_index_unnamed_index',
             'schema.tests.SchemaTests.test_add_remove_index',
             'schema.tests.SchemaTests.test_alter_field_add_index_to_integerfield',
             'schema.tests.SchemaTests.test_create_index_together',
@@ -117,8 +122,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'model_fields.test_integerfield.PositiveIntegerFieldTests.test_negative_values',
         },
         'Snowflake: Unsupported subquery type cannot be evaluated.': {
+            'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_on_exists',
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_multiple_subquery_annotation',  # noqa
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_subquery_annotation',
+            'aggregation.tests.AggregateTestCase.test_aggregation_exists_multivalued_outeref',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation_values',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation_values_collision',
@@ -152,6 +159,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_subquery_in_filter',
             'expressions.tests.FTimeDeltaTests.test_date_subquery_subtraction',
             'expressions.tests.FTimeDeltaTests.test_datetime_subquery_subtraction',
+            'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_in_subquery',
+            'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_in_subquery_related_outerref',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_with_values_list_on_annotated_and_unannotated',  # noqa
             'queries.tests.ExcludeTest17600.test_exclude_plain',
             'queries.tests.ExcludeTest17600.test_exclude_plain_distinct',
@@ -176,6 +185,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'queries.tests.Queries1Tests.test_tickets_5324_6704',
             'queries.tests.Queries4Tests.test_ticket24525',
             'queries.tests.Queries6Tests.test_tickets_8921_9188',
+            'queries.tests.Queries6Tests.test_xor_subquery',
             'queries.tests.TestTicket24605.test_ticket_24605',
             'queries.tests.Ticket20788Tests.test_ticket_20788',
             'queries.tests.Ticket22429Tests.test_ticket_22429',
@@ -195,9 +205,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake does not support nested transactions.': {
             'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
             'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
-        },
-        'Unused DatabaseIntrospection.get_key_columns() not implemented.': {
-            'introspection.tests.IntrospectionTests.test_get_key_columns',
         },
         'Unused DatabaseIntrospection.get_sequences() not implemented.': {
             'introspection.tests.IntrospectionTests.test_sequence_list',
@@ -230,12 +237,15 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_changes',  # noqa
             'migrations.test_operations.OperationTests.test_rename_field_reloads_state_on_fk_target_changes',
             'schema.tests.SchemaTests.test_alter_field_type_and_db_collation',
+            'schema.tests.SchemaTests.test_alter_primary_key_the_same_name',
             'schema.tests.SchemaTests.test_alter_textual_field_keep_null_status',
             'schema.tests.SchemaTests.test_m2m_rename_field_in_target_model',
             'schema.tests.SchemaTests.test_rename',
         },
         'Snowflake: cannot change column type because they have incompatible collations.': {
+            'migrations.test_operations.OperationTests.test_alter_field_pk_fk_db_collation',
             'schema.tests.SchemaTests.test_alter_field_db_collation',
+            'schema.tests.SchemaTests.test_alter_primary_key_db_collation',
             'schema.tests.SchemaTests.test_ci_cs_db_collation',
         },
     }

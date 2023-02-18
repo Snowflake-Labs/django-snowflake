@@ -36,49 +36,49 @@ class DatabaseOperations(BaseDatabaseOperations):
             return 'POWER(%s)' % ','.join(sub_expressions)
         return super().combine_expression(connector, sub_expressions)
 
-    def _convert_field_to_tz(self, field_name, tzname):
+    def _convert_sql_to_tz(self, sql, params, tzname):
         if tzname and settings.USE_TZ:
-            field_name = "CONVERT_TIMEZONE('%s', TO_TIMESTAMP(%s))" % (
+            return f"CONVERT_TIMEZONE(%s, TO_TIMESTAMP({sql}))", (
                 tzname,
-                field_name,
+                *params,
             )
-        return field_name
+        return sql, params
 
-    def datetime_cast_date_sql(self, field_name, tzname):
-        field_name = self._convert_field_to_tz(field_name, tzname)
-        return '(%s)::date' % field_name
+    def datetime_cast_date_sql(self, sql, params, tzname):
+        sql, params = self._convert_sql_to_tz(sql, params, tzname)
+        return f'({sql})::date', params
 
-    def datetime_cast_time_sql(self, field_name, tzname):
-        field_name = self._convert_field_to_tz(field_name, tzname)
-        return '(%s)::time' % field_name
+    def datetime_cast_time_sql(self, sql, params, tzname):
+        sql, params = self._convert_sql_to_tz(sql, params, tzname)
+        return f'({sql})::time', params
 
-    def date_extract_sql(self, lookup_type, field_name):
+    def date_extract_sql(self, lookup_type, sql, params):
         # https://docs.snowflake.com/en/sql-reference/functions-date-time.html#label-supported-date-time-parts
         if lookup_type == 'week_day':
             # For consistency across backends, return Sunday=1, Saturday=7.
-            return "EXTRACT('dow', %s) + 1" % field_name
+            return f"EXTRACT('dow', {sql}) + 1", params
         elif lookup_type == 'iso_week_day':
-            return "EXTRACT('dow_iso', %s)" % field_name
+            return f"EXTRACT('dow_iso', {sql})", params
         elif lookup_type == 'iso_year':
-            return "EXTRACT('yearofweekiso', %s)" % field_name
+            return f"EXTRACT('yearofweekiso', {sql})", params
         else:
-            return "EXTRACT('%s', %s)" % (lookup_type, field_name)
+            return f"EXTRACT(%s, {sql})", (lookup_type, *params)
 
-    def datetime_extract_sql(self, lookup_type, field_name, tzname):
-        field_name = self._convert_field_to_tz(field_name, tzname)
-        return self.date_extract_sql(lookup_type, field_name)
+    def datetime_extract_sql(self, lookup_type, sql, params, tzname):
+        sql, params = self._convert_sql_to_tz(sql, params, tzname)
+        return self.date_extract_sql(lookup_type, sql, params)
 
-    def date_trunc_sql(self, lookup_type, field_name, tzname=None):
-        field_name = self._convert_field_to_tz(field_name, tzname)
-        return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
+    def date_trunc_sql(self, lookup_type, sql, params, tzname=None):
+        sql, params = self._convert_sql_to_tz(sql, params, tzname)
+        return f"DATE_TRUNC(%s, {sql})", (lookup_type, *params)
 
-    def datetime_trunc_sql(self, lookup_type, field_name, tzname):
-        field_name = self._convert_field_to_tz(field_name, tzname)
-        return "DATE_TRUNC('%s', %s)" % (lookup_type, field_name)
+    def datetime_trunc_sql(self, lookup_type, sql, params, tzname):
+        sql, params = self._convert_sql_to_tz(sql, params, tzname)
+        return f"DATE_TRUNC(%s, {sql})", (lookup_type, *params)
 
-    def time_trunc_sql(self, lookup_type, field_name, tzname=None):
-        field_name = self._convert_field_to_tz(field_name, tzname)
-        return "DATE_TRUNC('%s', %s)::time" % (lookup_type, field_name)
+    def time_trunc_sql(self, lookup_type, sql, params, tzname=None):
+        sql, params = self._convert_sql_to_tz(sql, params, tzname)
+        return f"DATE_TRUNC(%s, {sql})::time", (lookup_type, *params)
 
     def format_for_duration_arithmetic(self, sql):
         return "INTERVAL '%s MICROSECONDS'" % sql
