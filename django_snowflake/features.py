@@ -175,11 +175,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'queries.tests.Queries1Tests.test_ticket7096',
             'queries.tests.Queries1Tests.test_tickets_5324_6704',
             'queries.tests.Queries4Tests.test_ticket24525',
-            # invalid identifier '"subquery"."col1"'
-            'queries.tests.Queries6Tests.test_distinct_ordered_sliced_subquery_aggregation',
             'queries.tests.Queries6Tests.test_tickets_8921_9188',
-            # invalid identifier '"subquery"."dumbcategory_ptr_id"'
-            'queries.tests.SubqueryTests.test_distinct_ordered_sliced_subquery',
             'queries.tests.TestTicket24605.test_ticket_24605',
             'queries.tests.Ticket20788Tests.test_ticket_20788',
             'queries.tests.Ticket22429Tests.test_ticket_22429',
