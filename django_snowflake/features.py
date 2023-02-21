@@ -79,6 +79,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'expressions.tests.FTimeDeltaTests.test_date_subtraction',
         'expressions.tests.FTimeDeltaTests.test_datetime_subtraction',
         'expressions.tests.FTimeDeltaTests.test_time_subtraction',
+        # Invalid expression [(SELECT (MAX(U0.NUM_EMPLOYEES)) + 1 AS
+        # "NEW_NUM_EMPLOYEES" FROM EXPRESSIONS_COMPANY AS U0 GROUP BY U0.ID,
+        # ...  ORDER BY U0.NUM_EMPLOYEES DESC NULLS FIRST LIMIT 1 OFFSET 0)]
+        # in VALUES clause.
+        'expressions.tests.BasicExpressionsTests.test_object_create_with_f_expression_in_subquery',
     }
 
     django_test_skips = {
@@ -223,6 +228,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             # VARCHAR to TIME
             'schema.tests.SchemaTests.test_alter_text_field_to_time_field',
             # VARCHAR to NUMBER
+            'migrations.test_operations.OperationTests.test_alter_field_pk_fk_char_to_int',
             'schema.tests.SchemaTests.test_char_field_with_db_index_to_fk',
             'schema.tests.SchemaTests.test_char_field_pk_to_auto_field',
             'schema.tests.SchemaTests.test_text_field_with_db_index_to_fk',
@@ -240,6 +246,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake: cannot change column type because they have incompatible collations.': {
             'migrations.test_operations.OperationTests.test_alter_field_pk_fk_db_collation',
             'schema.tests.SchemaTests.test_alter_field_db_collation',
+            'schema.tests.SchemaTests.test_alter_field_type_preserve_db_collation',
             'schema.tests.SchemaTests.test_alter_primary_key_db_collation',
             'schema.tests.SchemaTests.test_ci_cs_db_collation',
         },

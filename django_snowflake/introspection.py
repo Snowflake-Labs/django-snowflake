@@ -125,7 +125,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
     def get_field_type(self, data_type, description):
         field_type = super().get_field_type(data_type, description)
         # 16777216 is the default size if max_length isn't specified.
-        if data_type == 'VARCHAR' and description.internal_size == 16777216:
+        if data_type == 'VARCHAR' and description.display_size == 16777216:
             return 'TextField'
         # Handle NUMBER if it's something besides BigAutoField.
         if data_type == 'NUMBER':
@@ -150,12 +150,15 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         table_info = cursor.fetchall()
         return [
             FieldInfo(
-                # name, type_code, display_size,
-                self.identifier_converter(name), get_data_type(data_type), None,
-                # internal_size, precision, scale,
-                get_field_size(data_type), *get_precision_and_scale(data_type),
-                # null_ok, default, collation, pk,
-                null == 'Y', default, get_collation(data_type), pk == 'Y',
+                self.identifier_converter(name),  # name
+                get_data_type(data_type),  # type_code
+                get_field_size(data_type),  # display_size
+                None,  # internal_size
+                *get_precision_and_scale(data_type),  # precision, scale
+                null == 'Y',  # null_ok
+                default,  # default
+                get_collation(data_type),  # collation
+                pk == 'Y',  # pk
             )
             for (
                 name, data_type, kind, null, default, pk, unique_key, check,

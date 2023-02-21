@@ -100,9 +100,9 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             sql += " UNIQUE"
         return sql, []
 
-    def _collate_sql(self, collation):
+    def _collate_sql(self, collation, old_collation=None, table_name=None):
         # Collation must be single quoted instead of double quoted.
-        return f" COLLATE '{collation}'"
+        return f" COLLATE '{collation}'" if collation else ""
 
     def _alter_field(self, model, old_field, new_field, old_type, new_type,
                      old_db_params, new_db_params, strict=False):
