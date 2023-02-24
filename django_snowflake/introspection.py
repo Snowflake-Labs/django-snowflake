@@ -52,6 +52,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         'TIME': 'TimeField',
         'TIMESTAMP_LTZ': 'DateTimeField',
         'VARCHAR': 'CharField',
+        'VARIANT': 'JSONField',
     }
 
     def get_constraints(self, cursor, table_name):
