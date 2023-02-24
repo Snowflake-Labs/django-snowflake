@@ -2,6 +2,8 @@
 
 ## 3.2 beta 1 - TBD
 
+- Added support for `JSONField`.
+
 - The `regex` lookup pattern is no longer implicitly anchored at both ends.
 
 ## 3.2 alpha 2 - 2022-03-03
