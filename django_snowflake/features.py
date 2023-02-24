@@ -5,7 +5,6 @@ from django.utils.functional import cached_property
 
 class DatabaseFeatures(BaseDatabaseFeatures):
     can_clone_databases = True
-    can_introspect_json_field = False
     closed_cursor_error_class = InterfaceError
     create_test_procedure_without_params_sql = """
         CREATE PROCEDURE test_procedure() RETURNS varchar LANGUAGE JAVASCRIPT AS $$
@@ -35,8 +34,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # This feature is specific to the Django fork used for testing.
     supports_indexes = False
     supports_index_column_ordering = False
-    # Not yet implemented in this backend.
-    supports_json_field = False
+    supports_json_field_contains = False
     supports_over_clause = True
     supports_partial_indexes = False
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
@@ -89,6 +87,49 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'expressions.tests.FTimeDeltaTests.test_date_subtraction',
         'expressions.tests.FTimeDeltaTests.test_datetime_subtraction',
         'expressions.tests.FTimeDeltaTests.test_time_subtraction',
+        # JSONField queries with complex JSON parameters don't work:
+        # https://github.com/cedar-team/django-snowflake/issues/58
+        # Query:
+        #   WHERE "MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE" = 'null'
+        # needs to operate as:
+        #   WHERE "MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE" = PARSE_JSON('null')
+        'model_fields.test_jsonfield.TestSaveLoad.test_json_null_different_from_sql_null',
+        # Query:
+        #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":k) = '{"l": "m"}'
+        # needs to operate as:
+        #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":k) = PARSE_JSON('{"l": "m"}')
+        'model_fields.test_jsonfield.TestQuerying.test_shallow_lookup_obj_target',
+        # Query:
+        #   WHERE "MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE" = '{"a": "b", "c": 14}'
+        # needs to operate as:
+        #   WHERE "MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE" = PARSE_JSON('{"a": "b", "c": 14}')
+        'model_fields.test_jsonfield.TestQuerying.test_exact_complex',
+        # Three cases:
+        #     lookup='value__bar__in', value=[['foo', 'bar']]
+        #     lookup='value__bar__in', value=[['foo', 'bar'], ['a']]
+        #     lookup='value__bax__in', value=[{'foo': 'bar'}, {'a': 'b'}]
+        # Query:
+        #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN ('["foo", "bar"]')
+        # needs to operate as:
+        #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN (PARSE_JSON('["foo", "bar"]'))
+        'model_fields.test_jsonfield.TestQuerying.test_key_in',
+        # QuerySet.bulk_update() not supported for JSONField:
+        # Expression type does not match column data type, expecting VARIANT
+        # but got VARCHAR(16777216) for column JSON_FIELD
+        'queries.test_bulk_update.BulkUpdateTests.test_json_field',
+        # Server-side bug?
+        # CAST(TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":d) AS VARIANT)
+        # gives '"[\\"e\\",{\\"f\\":\\"g\\"}]"' and appending [0] gives None.
+        # The expected result ('"e"') is given by:
+        # PARSE_JSON(TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":d))[0]
+        # Possibly this backend could rewrite CAST(... AS VARIANT) to PARSE_JSON(...)?
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_annotation_expression',
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_expression',
+        'model_fields.test_jsonfield.TestQuerying.test_nested_key_transform_annotation_expression',
+        'model_fields.test_jsonfield.TestQuerying.test_nested_key_transform_expression',
+        # Fixed if TO_JSON is removed from the ORDER BY clause (or may be fine
+        # as is as some databases give the ordering that Snowflake does.)
+        'model_fields.test_jsonfield.TestQuerying.test_ordering_by_transform',
     }
 
     django_test_skips = {
@@ -159,6 +200,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
             'lookup.tests.LookupQueryingTests.test_filter_subquery_lhs',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
+            'model_fields.test_jsonfield.TestQuerying.test_nested_key_transform_on_subquery',
+            'model_fields.test_jsonfield.TestQuerying.test_obj_subquery_lookup',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_with_values_list_on_annotated_and_unannotated',  # noqa
             'queries.tests.ExcludeTest17600.test_exclude_plain',
             'queries.tests.ExcludeTest17600.test_exclude_plain_distinct',
