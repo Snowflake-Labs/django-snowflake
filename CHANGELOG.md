@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2 beta 1 - TBD
+
+- The `regex` lookup pattern is no longer implicitly anchored at both ends.
+
 ## 3.2 alpha 2 - 2022-03-03
 
 - Backwards incompatible: database identifiers (table names, column names,

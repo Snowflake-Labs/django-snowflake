@@ -53,11 +53,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     django_test_expected_failures = {
         # Subquery issue to be investigated.
         'lookup.tests.LookupTests.test_exact_exists',
-        # In Snowflake "the regex pattern is implicitly anchored at both ends
-        # (i.e. '' automatically becomes '^$')." This gives different results
-        # than other databases.
-        # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#corner-cases
-        'lookup.tests.LookupTests.test_regex',
         # "Binding data in type (event) is not supported." To be investigated.
         'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
