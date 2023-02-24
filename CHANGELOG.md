@@ -1,6 +1,8 @@
 # Changelog
 
-## 4.1 alpha 2 - TBD
+## 4.1 beta 1 - TBD
+
+- Added support for `JSONField`.
 
 - The `regex` lookup pattern is no longer implicitly anchored at both ends.
 

@@ -60,8 +60,6 @@ DATABASES = {
 - Snowflake doesn't support indexes. Thus, Django ignores any indexes defined
   on models or fields.
 
-- `JSONField` is [not supported](https://github.com/cedar-team/django-snowflake/issues/23).
-
 - Snowflake doesn't support check constraints, so the various
   `PositiveIntegerField` model fields allow negative values (though validation
   at the form level still works).
@@ -94,6 +92,20 @@ if you encounter an issue worth documenting.
   `TestCase` operates like `TransactionTestCase`, without the benefit of
   transactions to speed it up. A future version of Django (5.0 at the earliest)
   may leverage Snowflake's single layer transactions to give some speed up.
+
+* Due to snowflake-connector-python's [lack of VARIANT support](https://github.com/snowflakedb/snowflake-connector-python/issues/244),
+  some `JSONField` queries with complex JSON parameters [don't work](https://github.com/cedar-team/django-snowflake/issues/58).
+
+  For example, if `value` is a `JSONField`, this won't work:
+  ```python
+  >>> JSONModel.objects.filter(value__k={"l": "m"})
+  ```
+  A workaround is:
+  ```python
+  >>> from django.db.models.expressions import RawSQL
+  >>> JSONModel.objects.filter(value__k=RawSQL("PARSE_JSON(%s)", ('{"l": "m"}',)))
+  ```
+  In addition, ``QuerySet.bulk_update()`` isn't supported for `JSONField`.
 
 * Interval math where the interval is a column
   [is not supported](https://github.com/cedar-team/django-snowflake/issues/27).

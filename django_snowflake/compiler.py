@@ -1,5 +1,6 @@
 from itertools import chain
 
+from django.db.models import JSONField
 from django.db.models.sql import compiler
 
 
@@ -16,6 +17,7 @@ class SQLInsertCompiler(compiler.SQLInsertCompiler):
         fields = self.query.fields or [opts.pk]
         result.append("(%s)" % ", ".join(qn(f.column) for f in fields))
 
+        select_columns = []
         if self.query.fields:
             value_rows = [
                 [
@@ -24,6 +26,15 @@ class SQLInsertCompiler(compiler.SQLInsertCompiler):
                 ]
                 for obj in self.query.objs
             ]
+            has_json_field = False
+            for i, field in enumerate(fields, 1):
+                if isinstance(field, JSONField):
+                    has_json_field = True
+                    select_columns.append(f'parse_json(${i})')
+                else:
+                    select_columns.append(f'${i}')
+            if not has_json_field:
+                select_columns = []
         else:
             # An empty object.
             value_rows = [
@@ -70,6 +81,9 @@ class SQLInsertCompiler(compiler.SQLInsertCompiler):
                 result.append(r_sql)
                 params += [self.returning_params]
             return [(" ".join(result), tuple(chain.from_iterable(params)))]
+
+        if select_columns:
+            result.append('SELECT ' + (", ".join(c for c in select_columns)) + ' FROM')
 
         if can_bulk:
             result.append(self.connection.ops.bulk_insert_sql(fields, placeholder_rows))
