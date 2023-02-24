@@ -54,11 +54,6 @@ DATABASES = {
 * Snowflake has
   [limited support for subqueries](https://docs.snowflake.com/en/user-guide/querying-subqueries.html#types-supported-by-snowflake).
 
-* In Snowflake, the `regex` lookup pattern is
-  [implicitly anchored at both ends](https://docs.snowflake.com/en/sql-reference/functions-regexp.html#corner-cases)
-  (i.e. `''` automatically becomes `'^$'`), which gives different results than
-  other databases.
-
 * Valid values for `QuerySet.explain()`'s `format` parameter are `'json'`,
   `'tabular'`, and `'text'`. The default is `'tabular'`.
 

@@ -160,7 +160,7 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def regex_lookup(self, lookup_type):
         match_option = 'c' if lookup_type == 'regex' else 'i'
-        return "REGEXP_LIKE(%%s, %%s, '%s')" % match_option
+        return f"REGEXP_INSTR(%s, %s, 1, 1, 0, '{match_option}') > 0"
 
     def sql_flush(self, style, tables, *, reset_sequences=False, allow_cascade=False):
         if not tables:
