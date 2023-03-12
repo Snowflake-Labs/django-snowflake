@@ -75,7 +75,7 @@ if you encounter an issue worth documenting.
 * Snowflake only supports single layer transactions, but Django's `TestCase`
   requires that the database supports nested transactions. Therefore, Django's
   `TestCase` operates like `TransactionTestCase`, without the benefit of
-  transactions to speed it up. A future version of Django (4.1 at the earliest)
+  transactions to speed it up. A future version of Django (5.0 at the earliest)
   may leverage Snowflake's single layer transactions to give some speed up.
 
 * Interval math where the interval is a column
