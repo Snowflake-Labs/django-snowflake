@@ -16,6 +16,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     indexes_foreign_keys = False
     nulls_order_largest = True
     supported_explain_formats = {'JSON', 'TABULAR', 'TEXT'}
+    supports_comments = True
+    supports_comments_inline = True
     supports_column_check_constraints = False
     supports_table_check_constraints = False
     supports_expression_indexes = False

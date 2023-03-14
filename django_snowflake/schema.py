@@ -98,11 +98,29 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             sql += " PRIMARY KEY"
         if field.unique:
             sql += " UNIQUE"
+        if field.db_comment:
+            sql += self._comment_sql(field.db_comment)
         return sql, []
 
     def _collate_sql(self, collation, old_collation=None, table_name=None):
         # Collation must be single quoted instead of double quoted.
         return f" COLLATE '{collation}'" if collation else ""
+
+    def _comment_sql(self, comment):
+        comment_sql = super()._comment_sql(comment)
+        return f" COMMENT {comment_sql}"
+
+    def _alter_column_comment_sql(self, model, new_field, new_type, new_db_comment):
+        return (
+            self.sql_alter_column_comment
+            % {
+                "table": self.quote_name(model._meta.db_table),
+                "column": self.quote_name(new_field.column),
+                # Avoid "COMMENT " prefix.
+                "comment": BaseDatabaseSchemaEditor._comment_sql(self, new_db_comment),
+            },
+            [],
+        )
 
     def _alter_field(self, model, old_field, new_field, old_type, new_type,
                      old_db_params, new_db_params, strict=False):
@@ -133,8 +151,10 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
             })
 
     def quote_value(self, value):
-        # A more complete implementation isn't currently required.
-        return str(value)
+        if isinstance(value, str):
+            return "'%s'" % value.replace("'", "\\'")
+        else:
+            return str(value)
 
     def skip_default_on_alter(self, field):
         # Snowflake: Unsupported feature 'Alter Column Set Default'.

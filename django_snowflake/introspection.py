@@ -1,11 +1,13 @@
 from collections import namedtuple
 
 from django.db.backends.base.introspection import (
-    BaseDatabaseIntrospection, FieldInfo as BaseFieldInfo, TableInfo,
+    BaseDatabaseIntrospection, FieldInfo as BaseFieldInfo,
+    TableInfo as BaseTableInfo,
 )
 from django.utils.regex_helper import _lazy_re_compile
 
-FieldInfo = namedtuple('FieldInfo', BaseFieldInfo._fields + ('pk',))
+FieldInfo = namedtuple('FieldInfo', BaseFieldInfo._fields + ('pk', 'comment'))
+TableInfo = namedtuple('TableInfo', BaseTableInfo._fields + ('comment',))
 collation_re = _lazy_re_compile(r"^VARCHAR\(\d+\) COLLATE '([\w+\-]+)'$")
 field_size_re = _lazy_re_compile(r'^[A-Z]+\((\d+)\)')
 precision_and_scale_re = _lazy_re_compile(r'^NUMBER\((\d+),(\d+)\)$')
@@ -159,6 +161,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 default,  # default
                 get_collation(data_type),  # collation
                 pk == 'Y',  # pk
+                comment,  # comment
             )
             for (
                 name, data_type, kind, null, default, pk, unique_key, check,
@@ -185,8 +188,20 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         return name.lower()
 
     def get_table_list(self, cursor):
-        cursor.execute('SHOW TERSE TABLES')
-        tables = [TableInfo(self.identifier_converter(row[1]), 't') for row in cursor.fetchall()]
-        cursor.execute('SHOW TERSE VIEWS')
-        views = [TableInfo(self.identifier_converter(row[1]), 'v') for row in cursor.fetchall()]
+        cursor.execute('SHOW TABLES')
+        tables = [
+            TableInfo(
+                self.identifier_converter(row[1]),  # table name
+                't',  # 't' for table
+                row[5],  # comment
+            ) for row in cursor.fetchall()
+        ]
+        cursor.execute('SHOW VIEWS')
+        views = [
+            TableInfo(
+                self.identifier_converter(row[1]),   # view name
+                'v',  # 'v' for view
+                row[6],  # comment
+            ) for row in cursor.fetchall()
+        ]
         return tables + views
