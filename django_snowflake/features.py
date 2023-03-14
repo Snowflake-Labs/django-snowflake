@@ -122,8 +122,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_filter_with_subquery',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_subquery_outerref_transform',
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
-            'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
-            'lookup.tests.LookupTests.test_nested_outerref_lhs',
             'expressions.tests.BasicExpressionsTests.test_aggregate_subquery_annotation',
             'expressions.tests.BasicExpressionsTests.test_annotation_with_nested_outerref',
             'expressions.tests.BasicExpressionsTests.test_annotation_with_outerref',
@@ -143,6 +141,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_subquery_in_filter',
             'expressions.tests.FTimeDeltaTests.test_date_subquery_subtraction',
             'expressions.tests.FTimeDeltaTests.test_datetime_subquery_subtraction',
+            'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
+            'lookup.tests.LookupTests.test_nested_outerref_lhs',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_with_values_list_on_annotated_and_unannotated',  # noqa
             'queries.tests.ExcludeTest17600.test_exclude_plain',
             'queries.tests.ExcludeTest17600.test_exclude_plain_distinct',
