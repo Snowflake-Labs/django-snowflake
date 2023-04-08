@@ -1,3 +1,5 @@
+import os
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db.backends.base.base import BaseDatabaseWrapper
 from django.utils.asyncio import async_unsafe
@@ -8,6 +10,7 @@ except ImportError as e:
     raise ImproperlyConfigured("Error loading snowflake connector module: %s" % e)
 
 # Some of these import snowflake connector, so import them after checking if it's installed.
+from . import __version__                                   # NOQA isort:skip
 from .client import DatabaseClient                          # NOQA isort:skip
 from .creation import DatabaseCreation                      # NOQA isort:skip
 from .features import DatabaseFeatures                      # NOQA isort:skip
@@ -95,6 +98,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             'interpolate_empty_sequences':  True,
             **settings_dict['OPTIONS'],
         }
+        if os.environ.get('RUNNING_DJANGOS_TEST_SUITE') != 'true':
+            conn_params['application'] = 'Django_SnowflakeConnector_%s' % __version__
 
         if settings_dict['NAME']:
             conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])
