@@ -34,7 +34,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django_snowflake',
         'NAME': 'MY_DATABASE',
-        'SCHEMA': 'MY_SCHEME',
+        'SCHEMA': 'MY_SCHEMA',
         'WAREHOUSE': 'MY_WAREHOUSE',
         'USER': 'my_user',
         'PASSWORD': 'my_password',
