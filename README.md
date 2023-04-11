@@ -76,7 +76,7 @@ DATABASES = {
 
 This list isn't exhaustive. If you run into a problem, consult
 `django_snowflake/features.py` to see if a similar test is skipped. Please
-[create an issue on GitHub](https://github.com/cedar-team/django-snowflake/issues/new)
+[create an issue on GitHub](https://github.com/Snowflake-Labs/django-snowflake/issues/new)
 if you encounter an issue worth documenting.
 
 * Snowflake doesn't support `last_insert_id` to retrieve the ID of a newly
@@ -94,7 +94,7 @@ if you encounter an issue worth documenting.
   may leverage Snowflake's single layer transactions to give some speed up.
 
 * Due to snowflake-connector-python's [lack of VARIANT support](https://github.com/snowflakedb/snowflake-connector-python/issues/244),
-  some `JSONField` queries with complex JSON parameters [don't work](https://github.com/cedar-team/django-snowflake/issues/58).
+  some `JSONField` queries with complex JSON parameters [don't work](https://github.com/Snowflake-Labs/django-snowflake/issues/58).
 
   For example, if `value` is a `JSONField`, this won't work:
   ```python
@@ -108,7 +108,7 @@ if you encounter an issue worth documenting.
   In addition, ``QuerySet.bulk_update()`` isn't supported for `JSONField`.
 
 * Interval math where the interval is a column
-  [is not supported](https://github.com/cedar-team/django-snowflake/issues/27).
+  [is not supported](https://github.com/Snowflake-Labs/django-snowflake/issues/27).
 
 * Interval math with a null interval
-  [crashes](https://github.com/cedar-team/django-snowflake/issues/26).
+  [crashes](https://github.com/Snowflake-Labs/django-snowflake/issues/26).
