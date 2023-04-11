@@ -87,7 +87,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',
         'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
         # Interval math with NULL crashes:
-        # https://github.com/cedar-team/django-snowflake/issues/26
+        # https://github.com/Snowflake-Labs/django-snowflake/issues/26
         'expressions.tests.FTimeDeltaTests.test_date_subtraction',
         'expressions.tests.FTimeDeltaTests.test_datetime_subtraction',
         'expressions.tests.FTimeDeltaTests.test_time_subtraction',
@@ -97,7 +97,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # in VALUES clause.
         'expressions.tests.BasicExpressionsTests.test_object_create_with_f_expression_in_subquery',
         # JSONField queries with complex JSON parameters don't work:
-        # https://github.com/cedar-team/django-snowflake/issues/58
+        # https://github.com/Snowflake-Labs/django-snowflake/issues/58
         # Query:
         #   WHERE "MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE" = 'null'
         # needs to operate as:
