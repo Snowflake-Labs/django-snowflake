@@ -172,7 +172,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             return f'"{name}"'
         # TODO: If the identifier field isn't uppercase, then it needs to be
         # quoted to preserve its case.
-        # https://github.com/cedar-team/django-snowflake/issues/43
+        # https://github.com/Snowflake-Labs/django-snowflake/issues/43
         # This may require some changes in Django itself to work properly. This
         # would replace the special handling of SYS_CONSTRAINT_ above.
         # if name != name.upper():
