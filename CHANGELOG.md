@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.2 beta 1 - TBD
+## 3.2 beta 1 - 2023-04-17
 
 - Added support for `JSONField`.
 
