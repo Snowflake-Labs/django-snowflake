@@ -55,6 +55,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # This feature is specific to the Django fork used for testing.
     supports_tz_offsets = False
     uses_savepoints = False
+    ignores_table_name_case = True
     test_collations = {
         'ci': 'en-ci',
         # Snowflake: case-sensitive always returns the lowercase version of a
@@ -165,6 +166,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'contenttypes_tests.test_operations.ContentTypeOperationsTests.test_content_type_rename_conflict',
             'contenttypes_tests.test_operations.ContentTypeOperationsTests.test_existing_content_type_rename',
             'custom_pk.tests.CustomPKTests.test_unique_pk',
+            'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_with_existing_grandparent',
             'get_or_create.tests.GetOrCreateTestsWithManualPKs.test_create_with_duplicate_primary_key',
             'get_or_create.tests.GetOrCreateTestsWithManualPKs.test_savepoint_rollback',
             'get_or_create.tests.GetOrCreateThroughManyToMany.test_something',
@@ -278,7 +280,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'queries.tests.ExcludeTests.test_exclude_multivalued_exists',
             'queries.tests.ExcludeTests.test_exclude_subquery',
             'queries.tests.ExcludeTests.test_subquery_exclude_outerref',
-            'queries.tests.ExcludeTests.test_ticket14511',
+            'queries.tests.ExcludeTests.test_exclude_m2m_through',
             'queries.tests.ExcludeTests.test_to_field',
             'queries.tests.ForeignKeyToBaseExcludeTests.test_ticket_21787',
             'queries.tests.JoinReuseTest.test_inverted_q_across_relations',
@@ -387,8 +389,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'assertNumQueries is sometimes off because of the extra queries this '
         'backend uses to fetch an object\'s ID.': {
             'contenttypes_tests.test_models.ContentTypesTests.test_get_for_models_creation',
+            'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_diamond_mti',
+            'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_false',
+            'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_parent',
+            'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_with_grandparent',
             'model_formsets_regress.tests.FormsetTests.test_extraneous_query_is_not_run',
             'model_inheritance.tests.ModelInheritanceTests.test_create_child_no_update',
+            'model_inheritance.tests.ModelInheritanceTests.test_create_diamond_mti_common_parent',
         },
         'It can be problematic if a model instance is manually assigned a pk value.': {
             'contenttypes_tests.test_views.ContentTypesViewsSiteRelTests.test_shortcut_view_with_null_site_fk',

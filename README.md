@@ -3,9 +3,9 @@
 ## Install and usage
 
 Use the version of django-snowflake that corresponds to your version of
-Django. For example, to get the latest compatible release for Django 4.2.x:
+Django. For example, to get the latest compatible release for Django 5.0.x:
 
-`pip install django-snowflake==4.2.*`
+`pip install django-snowflake==5.0.*`
 
 The minor release number of Django doesn't correspond to the minor release
 number of django-snowflake. Use the latest minor release of each.
@@ -128,7 +128,7 @@ if you encounter an issue worth documenting.
 
 To troubleshoot issues with connectivity to Snowflake, you can enable
 [Snowflake Connector for Python's logging](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-example#logging)
-using [Django's `LOGGING` setting](https://docs.djangoproject.com/en/4.2/topics/logging/).
+using [Django's `LOGGING` setting](https://docs.djangoproject.com/en/stable/topics/logging/).
 
 This is a minimal addition to Django's default `"loggers"` configuration that
 enables the connector's `DEBUG` logging:
