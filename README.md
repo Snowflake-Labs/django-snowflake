@@ -1,4 +1,4 @@
-# Snowflake backend for Django
+# Snowflake Connector for Django
 
 ## Install and usage
 
