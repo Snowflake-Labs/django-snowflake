@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2 beta 2 - Unreleased
+
+* Allowed specifying a `private_key` in the `'OPTIONS'` dictionary in the
+  `DATABASES` setting without also specifying `PASSWORD` or `authenticator`.
+
 ## 4.2 beta 1 - 2023-04-11
 
 * Added support for `JSONField`.
