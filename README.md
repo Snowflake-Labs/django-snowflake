@@ -112,3 +112,27 @@ if you encounter an issue worth documenting.
 
 * Interval math with a null interval
   [crashes](https://github.com/Snowflake-Labs/django-snowflake/issues/26).
+
+## Troubleshooting
+
+### Debug logging
+
+To troubleshoot issues with connectivity to Snowflake, you can enable
+[Snowflake Connector for Python's logging](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-example#logging)
+using [Django's `LOGGING` setting](https://docs.djangoproject.com/en/4.2/topics/logging/).
+
+This is a minimal addition to Django's default `"loggers"` configuration that
+enables the connector's `DEBUG` logging:
+
+```python
+LOGGING = {
+    …
+    "loggers": {
+        …
+        "snowflake.connector": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+        },
+    },
+}
+```
