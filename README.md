@@ -40,9 +40,19 @@ DATABASES = {
         'PASSWORD': 'my_password',
         'ACCOUNT': 'my_account',
         # Include 'OPTIONS' if you need to specify any other
-        # snowflake.connector.connect() parameters.
+        # snowflake.connector.connect() parameters, documented at:
         # https://docs.snowflake.com/en/user-guide/python-connector-api.html#connect
-        'OPTIONS': {},
+        'OPTIONS': {
+            # Examples:
+            'role': 'MY_ROLE',
+            # To use native Okta authenticators:
+            # https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#native-sso-okta-only
+            'authenticator': 'https://example.okta.com',
+            # To use private key authentication, obtaining the pkb variable
+            # using the sample code at:
+            # https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-example#label-python-key-pair-authn-rotation
+            'private_key': pkb,
+        },
     },
 }
 ```
