@@ -29,6 +29,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     has_json_object_function = False
     indexes_foreign_keys = False
     nulls_order_largest = True
+    # At least for DecimalField, Snowflake errors with "Default value data type
+    # does not match data type for column" if the default isn't serialized.
+    requires_literal_defaults = True
     supported_explain_formats = {'JSON', 'TABULAR', 'TEXT'}
     supports_comments = True
     supports_comments_inline = True
@@ -405,6 +408,14 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'This test takes on order of an hour due to 2,000 inserts.': {
             'delete.tests.DeletionTests.test_large_delete_related',
+        },
+        "Snowflake: Unsupported feature 'Alter Column Set Default'.": {
+            'migrations.test_operations.OperationTests.test_alter_field_add_database_default',
+            'migrations.test_operations.OperationTests.test_alter_field_change_default_to_database_default',
+            'migrations.test_operations.OperationTests.test_alter_field_change_nullable_to_database_default_not_null',
+        },
+        "Snowflake: Invalid column default expression [PI()].": {
+            'migrations.test_operations.OperationTests.test_add_field_database_default_function',
         },
     }
 

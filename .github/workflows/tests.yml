@@ -48,6 +48,7 @@ jobs:
           db_functions
           expressions
           expressions_window
+          field_defaults
           inspectdb
           introspection
           lookup
