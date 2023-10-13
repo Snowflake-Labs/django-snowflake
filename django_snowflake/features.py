@@ -4,6 +4,9 @@ from django.utils.functional import cached_property
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
+    # Specifying a pk of zero is problematic because of the SELECT MAX(id)
+    # approach to getting the last insert id.
+    allows_auto_pk_0 = False
     can_clone_databases = True
     closed_cursor_error_class = InterfaceError
     create_test_procedure_without_params_sql = """
@@ -69,6 +72,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'lookup.tests.LookupQueryingTests.test_filter_exists_lhs',
         # "Binding data in type (event) is not supported." To be investigated.
         'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
+        # Binding data in type (safestring) is not supported.
+        'i18n.tests.TestModels.test_safestr',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
@@ -139,14 +144,32 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Fixed if TO_JSON is removed from the ORDER BY clause (or may be fine
         # as is as some databases give the ordering that Snowflake does.)
         'model_fields.test_jsonfield.TestQuerying.test_ordering_by_transform',
+        # SQL compilation error: <subquery> is not a valid order by expression.
+        'ordering.tests.OrderingTests.test_orders_nulls_first_on_filtered_subquery',
+        # Zero pk validation not added yet.
+        'backends.tests.MySQLPKZeroTests.test_zero_as_autoval',
+        'bulk_create.tests.BulkCreateTests.test_zero_as_autoval',
     }
 
     django_test_skips = {
         'Snowflake does not enforce FOREIGN KEY constraints.': {
             'backends.tests.FkConstraintsTests',
+            'fixtures_regress.tests.TestFixtures.test_loaddata_raises_error_when_fixture_has_invalid_foreign_key',
             'model_fields.test_uuid.TestAsPrimaryKeyTransactionTests.test_unsaved_fk',
+            'transactions.tests.NonAutocommitTests.test_orm_query_after_error_and_rollback',
         },
         'Snowflake does not enforce UNIQUE constraints.': {
+            'auth_tests.test_basic.BasicTestCase.test_unicode_username',
+            'auth_tests.test_migrations.ProxyModelWithSameAppLabelTests.test_migrate_with_existing_target_permission',
+            'constraints.tests.UniqueConstraintTests.test_database_constraint',
+            'contenttypes_tests.test_operations.ContentTypeOperationsTests.test_content_type_rename_conflict',
+            'contenttypes_tests.test_operations.ContentTypeOperationsTests.test_existing_content_type_rename',
+            'custom_pk.tests.CustomPKTests.test_unique_pk',
+            'get_or_create.tests.GetOrCreateTestsWithManualPKs.test_create_with_duplicate_primary_key',
+            'get_or_create.tests.GetOrCreateTestsWithManualPKs.test_savepoint_rollback',
+            'get_or_create.tests.GetOrCreateThroughManyToMany.test_something',
+            'get_or_create.tests.UpdateOrCreateTests.test_manual_primary_key_test',
+            'get_or_create.tests.UpdateOrCreateTestsWithManualPKs.test_create_with_duplicate_primary_key',
             'model_fields.test_filefield.FileFieldTests.test_unique_when_same_filename',
             'one_to_one.tests.OneToOneTests.test_multiple_o2o',
             'queries.test_bulk_update.BulkUpdateTests.test_database_routing_batch_atomicity',
@@ -177,9 +200,21 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'model_fields.test_integerfield.PositiveIntegerFieldTests.test_negative_values',
         },
         'Snowflake: Unsupported subquery type cannot be evaluated.': {
+            'admin_changelist.tests.ChangeListTests.test_multiple_search_fields',
+            'admin_filters.tests.ListFiltersTests.test_emptylistfieldfilter_genericrelation',
+            'admin_filters.tests.ListFiltersTests.test_emptylistfieldfilter_reverse_relationships',
+            'admin_filters.tests.ListFiltersTests.test_listfilter_genericrelation',
+            'admin_filters.tests.ListFiltersTests.test_relatedfieldlistfilter_manytomany',
+            'admin_filters.tests.ListFiltersTests.test_relatedfieldlistfilter_reverse_relationships',
+            'admin_views.tests.AdminSearchTest.test_exact_matches',
+            'admin_views.tests.AdminSearchTest.test_no_total_count',
+            'admin_views.tests.AdminSearchTest.test_search_on_sibling_models',
+            'admin_views.tests.AdminViewBasicTest.test_relation_spanning_filters',
+            'admin_views.tests.LimitChoicesToInAdminTest.test_limit_choices_to_as_callable',
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_on_exists',
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_multiple_subquery_annotation',  # noqa
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_subquery_annotation',
+            'aggregation.tests.AggregateAnnotationPruningTests.test_referenced_subquery_requires_wrapping',
             'aggregation.tests.AggregateTestCase.test_aggregation_exists_multivalued_outeref',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation_values',
@@ -188,10 +223,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_exists_aggregate_values_chaining',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_filter_with_subquery',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_subquery_outerref_transform',
+            'auth_tests.test_models.UserWithPermTestCase.test_basic',
+            'auth_tests.test_models.UserWithPermTestCase.test_nonexistent_permission',
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_extract_outerref',
             'db_functions.datetime.test_extract_trunc.DateFunctionTests.test_trunc_subquery_with_parameters',
             'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_extract_outerref',
             'expressions.tests.BasicExpressionsTests.test_aggregate_subquery_annotation',
+            'expressions.tests.BasicExpressionsTests.test_annotation_with_deeply_nested_outerref',
             'expressions.tests.BasicExpressionsTests.test_annotation_with_nested_outerref',
             'expressions.tests.BasicExpressionsTests.test_annotation_with_outerref',
             'expressions.tests.BasicExpressionsTests.test_annotations_within_subquery',
@@ -212,10 +250,21 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.FTimeDeltaTests.test_date_subquery_subtraction',
             'expressions.tests.FTimeDeltaTests.test_datetime_subquery_subtraction',
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
+            'filtered_relation.tests.FilteredRelationTests.test_with_exclude',
+            'generic_relations.tests.GenericRelationsTests.test_queries_content_type_restriction',
+            'generic_relations_regress.tests.GenericRelationTests.test_ticket_20378',
+            'generic_relations_regress.tests.GenericRelationTests.test_ticket_20564',
+            'generic_relations_regress.tests.GenericRelationTests.test_ticket_20564_nullable_fk',
             'lookup.tests.LookupQueryingTests.test_filter_subquery_lhs',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
+            'many_to_many.tests.ManyToManyTests.test_selects',
             'model_fields.test_jsonfield.TestQuerying.test_nested_key_transform_on_subquery',
             'model_fields.test_jsonfield.TestQuerying.test_obj_subquery_lookup',
+            'model_forms.tests.LimitChoicesToTests.test_fields_for_model_applies_limit_choices_to',
+            'model_forms.tests.LimitChoicesToTests.test_limit_choices_to_callable_for_fk_rel',
+            'model_forms.tests.LimitChoicesToTests.test_limit_choices_to_callable_for_m2m_rel',
+            'model_forms.tests.LimitChoicesToTests.test_limit_choices_to_m2m_through',
+            'model_forms.tests.LimitChoicesToTests.test_limit_choices_to_no_duplicates',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_in_subquery',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_in_subquery_related_outerref',
             'queries.test_qs_combinators.QuerySetSetOperationTests.test_union_with_values_list_on_annotated_and_unannotated',  # noqa
@@ -252,16 +301,37 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'window specification.': {
              'expressions_window.tests.WindowFunctionTests.test_row_number_no_ordering',
         },
+        # https://github.com/Snowflake-Labs/django-snowflake/issues/40
         'DatabaseOperations.sequence_reset_sql() must be implemented for this test.': {
             'backends.tests.SequenceResetTest.test_generic_relation',
             'backends.base.test_operations.SqlFlushTests.test_execute_sql_flush_statements',
+            'servers.tests.LiveServerDatabase.test_database_writes',
         },
         "Snowflake prohibits string truncation when using Cast.": {
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
         'Snowflake does not support nested transactions.': {
+            'admin_inlines.tests.TestReadOnlyChangeViewInlinePermissions.test_add_url_not_allowed',
+            'admin_views.tests.AdminViewBasicTest.test_disallowed_to_field',
+            'admin_views.tests.AdminViewPermissionsTest.test_add_view',
+            'admin_views.tests.AdminViewPermissionsTest.test_change_view',
+            'admin_views.tests.AdminViewPermissionsTest.test_change_view_save_as_new',
+            'admin_views.tests.AdminViewPermissionsTest.test_delete_view',
+            'auth_tests.test_views.ChangelistTests.test_view_user_password_is_readonly',
+            'fixtures.tests.FixtureLoadingTests.test_loaddata_app_option',
+            'fixtures.tests.FixtureLoadingTests.test_unmatched_identifier_loading',
+            'force_insert_update.tests.ForceTests.test_force_update',
+            'get_or_create.tests.GetOrCreateTests.test_get_or_create_invalid_params',
+            'get_or_create.tests.UpdateOrCreateTests.test_integrity',
+            'many_to_one.tests.ManyToOneTests.test_fk_assignment_and_related_object_cache',
+            'many_to_many.tests.ManyToManyTests.test_add',
             'model_fields.test_booleanfield.BooleanFieldTests.test_null_default',
             'model_fields.test_floatfield.TestFloatField.test_float_validates_object',
+            'multiple_database.tests.QueryTestCase.test_generic_key_cross_database_protection',
+            'multiple_database.tests.QueryTestCase.test_m2m_cross_database_protection',
+            'transaction_hooks.tests.TestConnectionOnCommit.test_discards_hooks_from_rolled_back_savepoint',
+            'transaction_hooks.tests.TestConnectionOnCommit.test_inner_savepoint_rolled_back_with_outer',
+            'transaction_hooks.tests.TestConnectionOnCommit.test_inner_savepoint_does_not_affect_outer',
         },
         'Unused DatabaseIntrospection.get_sequences() not implemented.': {
             'introspection.tests.IntrospectionTests.test_sequence_list',
@@ -306,6 +376,27 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'schema.tests.SchemaTests.test_alter_field_type_preserve_db_collation',
             'schema.tests.SchemaTests.test_alter_primary_key_db_collation',
             'schema.tests.SchemaTests.test_ci_cs_db_collation',
+        },
+        # https://github.com/Snowflake-Labs/django-snowflake/issues/24
+        'Database caching is not supported.': {
+            'cache.tests.CreateCacheTableForDBCacheTests',
+            'cache.tests.DBCacheTests',
+            'cache.tests.DBCacheWithTimeZoneTests',
+        },
+        'assertNumQueries is sometimes off because of the extra queries this '
+        'backend uses to fetch an object\'s ID.': {
+            'contenttypes_tests.test_models.ContentTypesTests.test_get_for_models_creation',
+            'model_formsets_regress.tests.FormsetTests.test_extraneous_query_is_not_run',
+            'model_inheritance.tests.ModelInheritanceTests.test_create_child_no_update',
+        },
+        'It can be problematic if a model instance is manually assigned a pk value.': {
+            'contenttypes_tests.test_views.ContentTypesViewsSiteRelTests.test_shortcut_view_with_null_site_fk',
+            'contenttypes_tests.test_views.ContentTypesViewsSiteRelTests.test_shortcut_view_with_site_m2m',
+            'multiple_database.tests.RouterTestCase.test_m2m_cross_database_protection',
+            'sites_tests.tests.SitesFrameworkTests.test_clear_site_cache_domain',
+        },
+        'This test takes on order of an hour due to 2,000 inserts.': {
+            'delete.tests.DeletionTests.test_large_delete_related',
         },
     }
 
