@@ -95,6 +95,8 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         collation = db_params.get('collation')
         if collation:
             sql += self._collate_sql(collation)
+        if field.generated:
+            sql += self._column_generated_sql(field)
         if not field.null and not exclude_not_null:
             sql += " NOT NULL"
         # Add database default.
@@ -157,6 +159,13 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                     "column": self.quote_name(new_field.column),
                 },
             })
+
+    def _column_generated_sql(self, field):
+        """Return the SQL to use in a GENERATED ALWAYS clause."""
+        expression_sql, params = field.generated_sql(self.connection)
+        if params:
+            expression_sql = expression_sql % tuple(self.quote_value(p) for p in params)
+        return f" AS ({expression_sql})"
 
     def quote_value(self, value):
         if isinstance(value, str):

@@ -57,6 +57,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_transactions = False
     # This feature is specific to the Django fork used for testing.
     supports_tz_offsets = False
+    supports_virtual_generated_columns = True
     uses_savepoints = False
     ignores_table_name_case = True
     test_collations = {
@@ -67,6 +68,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'cs': None,
         'non_default': 'en-ci',
         'swedish_ci': 'sv-ci',
+        'virtual': None,
     }
     test_now_utc_template = 'SYSDATE()'
 
