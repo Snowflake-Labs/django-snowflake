@@ -214,6 +214,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_on_exists',
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_multiple_subquery_annotation',  # noqa
             'aggregation.test_filter_argument.FilteredAggregateTests.test_filtered_aggregate_ref_subquery_annotation',
+            'aggregation.tests.AggregateAnnotationPruningTests.test_referenced_composed_subquery_requires_wrapping',
             'aggregation.tests.AggregateAnnotationPruningTests.test_referenced_subquery_requires_wrapping',
             'aggregation.tests.AggregateTestCase.test_aggregation_exists_multivalued_outeref',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation',
