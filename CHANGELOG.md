@@ -9,6 +9,9 @@
   dictionary of the `DATABASES` setting instead of `'private_key'`. This is
   now the documented pattern in the README.
 
+* Fixed `dbshell` crash if using the `client_session_keep_alive` or
+  `passcode_in_password` options.
+
 ## 4.2 beta 1 - 2023-04-11
 
 * Added support for `JSONField`.

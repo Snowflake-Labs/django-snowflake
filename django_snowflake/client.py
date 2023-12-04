@@ -34,7 +34,7 @@ class DatabaseClient(BaseDatabaseClient):
         if authenticator:
             args += ['--authenticator', authenticator]
         if client_session_keep_alive:
-            args += ['--client-session-keep-alive', client_session_keep_alive]
+            args += ['--client-session-keep-alive']
         if dbname:
             args += ['-d', dbname]
         if host:
@@ -42,7 +42,7 @@ class DatabaseClient(BaseDatabaseClient):
         if passcode:
             args += ['--mfa-passcode', passcode]
         if passcode_in_password:
-            args += ['--mfa-passcode-in-password', passcode_in_password]
+            args += ['--mfa-passcode-in-password']
         if private_key_file:
             args += ['--private-key-path', private_key_file]
         if role:
