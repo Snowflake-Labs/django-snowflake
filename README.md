@@ -48,10 +48,9 @@ DATABASES = {
             # To use native Okta authenticators:
             # https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#native-sso-okta-only
             'authenticator': 'https://example.okta.com',
-            # To use private key authentication, obtaining the pkb variable
-            # using the sample code at:
-            # https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-example#label-python-key-pair-authn-rotation
-            'private_key': pkb,
+            # To use private key authentication:
+            'private_key_file': '<path>/rsa_key.p8',
+            'private_key_file_pwd': 'my_passphrase',
         },
     },
 }

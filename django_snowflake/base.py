@@ -90,6 +90,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     introspection_class = DatabaseIntrospection
     ops_class = DatabaseOperations
 
+    password_not_required_options = ('private_key', 'private_key_file', 'authenticator')
     settings_is_missing = "settings.DATABASES is missing '%s' for 'django_snowflake'."
 
     def get_connection_params(self):
@@ -111,7 +112,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
         if settings_dict['PASSWORD']:
             conn_params['password'] = settings_dict['PASSWORD']
-        elif 'private_key' not in conn_params and 'authenticator' not in conn_params:
+        elif all(x not in conn_params for x in self.password_not_required_options):
             raise ImproperlyConfigured(self.settings_is_missing % 'PASSWORD')
 
         if settings_dict.get('ACCOUNT'):
