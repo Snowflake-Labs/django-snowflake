@@ -57,6 +57,23 @@ DATABASES = {
 }
 ```
 
+## Persistent connections
+
+To use persisent connections, set Django's [`CONN_MAX_AGE`](https://docs.djangoproject.com/en/stable/ref/databases/#persistent-connections)
+and Snowflake Python Connector's [`client_session_keep_alive`](https://docs.snowflake.com/en/sql-reference/parameters#client-session-keep-alive):
+
+```python
+DATABASES = {
+    'default': {
+        # ...
+        'CONN_MAX_AGE': None,
+        'OPTIONS': {
+            'client_session_keep_alive': True,
+        },
+    },
+}
+```
+
 ## Notes on Django fields
 
 - Consistent with [Snowflake's convention](https://docs.snowflake.com/en/sql-reference/identifiers-syntax.html),
