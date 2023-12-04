@@ -2,8 +2,12 @@
 
 ## 4.2 beta 2 - Unreleased
 
-* Allowed specifying a `private_key` in the `'OPTIONS'` dictionary in the
-  `DATABASES` setting without also specifying `PASSWORD` or `authenticator`.
+* Bumped the minimum required version of `snowflake-connector-python` to 3.6.0.
+
+* Fixed private key authentication with `dbshell`. For this to work, you must
+  use `'private_key_file'` and`'private_key_file_pwd'` in the `'OPTIONS'`
+  dictionary of the `DATABASES` setting instead of `'private_key'`. This is
+  now the documented pattern in the README.
 
 ## 4.2 beta 1 - 2023-04-11
 
