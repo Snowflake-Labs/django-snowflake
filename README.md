@@ -10,23 +10,6 @@ Django. For example, to get the latest compatible release for Django 4.2.x:
 The minor release number of Django doesn't correspond to the minor release
 number of django-snowflake. Use the latest minor release of each.
 
-If a release series of django-snowflake only has pre-releases (alphas or
-betas), you'll see an error with a list of the available versions. In that
-case, include `--pre` to allow `pip` to install the latest pre-release.
-
-For example, if django-snowflake 4.2 alpha 1 is the latest available version
-of the 4.2 release series:
-
-```
-$ pip install django-snowflake==4.2.*
-ERROR: Could not find a version that satisfies the requirement
-django-snowflake==4.2.* (from versions: ..., 4.2a1)
-
-$ pip install --pre django-snowflake==4.2.*
-...
-Successfully installed ... django-snowflake-4.2a1 ...
-```
-
 Configure the Django `DATABASES` setting similar to this:
 
 ```python

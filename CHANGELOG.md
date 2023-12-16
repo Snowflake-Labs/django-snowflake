@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2 beta 2 - Unreleased
+## 4.2 - 2023-12-15
 
 * Bumped the minimum required version of `snowflake-connector-python` to 3.6.0.
 
