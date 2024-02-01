@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.1 - Unreleased
+
+* Fixed crash in `DatabaseIntrospection.get_table_description()` due to
+  Snowflake adding a column to the output of `DESCRIBE TABLE` in behavior
+  change bundle 2023_08.
+
 ## 4.2 - 2023-12-15
 
 * Bumped the minimum required version of `snowflake-connector-python` to 3.6.0.
