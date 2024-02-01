@@ -415,6 +415,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'migrations.test_operations.OperationTests.test_alter_field_add_database_default',
             'migrations.test_operations.OperationTests.test_alter_field_change_default_to_database_default',
             'migrations.test_operations.OperationTests.test_alter_field_change_nullable_to_database_default_not_null',
+            'migrations.test_operations.OperationTests.test_alter_field_change_nullable_to_decimal_database_default_not_null',  # noqa
         },
         "Snowflake: Invalid column default expression [PI()].": {
             'migrations.test_operations.OperationTests.test_add_field_database_default_function',
