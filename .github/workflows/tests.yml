@@ -13,9 +13,9 @@ jobs:
     name: Django Test Suite
     steps:
       - name: Checkout django-snowflake
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Checkout Django
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'timgraham/django'
           ref: 'snowflake-5.0.x'
