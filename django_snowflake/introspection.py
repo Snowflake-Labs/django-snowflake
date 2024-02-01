@@ -160,7 +160,9 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             )
             for (
                 name, data_type, kind, null, default, pk, unique_key, check,
-                expression, comment, policy_name,
+                # *_ ignores policy_name, privacy_domain, and any future
+                # columns in DESCRIBE TABLE output.
+                expression, comment, *_
             ) in table_info
         ]
 

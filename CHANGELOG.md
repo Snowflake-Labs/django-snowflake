@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2 - Unreleased
+
+- Fixed crash in `DatabaseIntrospection.get_table_description()` due to
+  Snowflake adding a column to the output of `DESCRIBE TABLE` in behavior
+  change bundle 2023_08.
+
 ## 3.2 beta 1 - 2023-04-17
 
 - Added support for `JSONField`.
