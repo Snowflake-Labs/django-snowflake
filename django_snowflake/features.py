@@ -53,10 +53,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_slicing_ordering_in_compound = True
     supports_subqueries_in_group_by = False
     supports_temporal_subtraction = True
-    # This really means "supports_nested_transactions". Snowflake supports a
-    # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
-    # contribute to the current (only) transaction.
-    supports_transactions = False
+    supports_transactions = True
     # This feature is specific to the Django fork used for testing.
     supports_tz_offsets = False
     supports_virtual_generated_columns = True
