@@ -99,8 +99,8 @@ if you encounter an issue worth documenting.
 * Snowflake only supports single layer transactions, but Django's `TestCase`
   requires that the database supports nested transactions. Therefore, Django's
   `TestCase` operates like `TransactionTestCase`, without the benefit of
-  transactions to speed it up. A future version of Django (5.0 at the earliest)
-  may leverage Snowflake's single layer transactions to give some speed up.
+  transactions to speed it up. Starting in Django 5.1, `TestCase` uses
+  Snowflake's single layer transaction support to give some speed up.
 
 * Due to snowflake-connector-python's [lack of VARIANT support](https://github.com/snowflakedb/snowflake-connector-python/issues/244),
   some `JSONField` queries with complex JSON parameters [don't work](https://github.com/Snowflake-Labs/django-snowflake/issues/58).
