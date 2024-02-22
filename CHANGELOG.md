@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0 - Unreleased
+## 4.0 - 2024-02-23
 
 - Fixed data corruption of new model instance IDs. Connection initialization
   now sets `NOORDER_SEQUENCE_AS_DEFAULT=False` (after [the default
