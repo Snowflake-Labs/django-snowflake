@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.2 - Unreleased
+## 3.2 - 2024-02-23
 
 - Fixed crash in `DatabaseIntrospection.get_table_description()` due to
   Snowflake adding a column to the output of `DESCRIBE TABLE` in behavior
