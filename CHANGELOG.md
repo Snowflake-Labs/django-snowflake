@@ -6,6 +6,13 @@
   Snowflake adding a column to the output of `DESCRIBE TABLE` in behavior
   change bundle 2023_08.
 
+- Fixed data corruption of new model instance IDs. Connection initialization
+  now sets `NOORDER_SEQUENCE_AS_DEFAULT=False` (after [the default
+  changed to True](https://docs.snowflake.com/en/release-notes/bcr-bundles/2024_01/bcr-1483)
+  in behavior change bundle 2024_01) to allow this backend to continue to
+  retrieve the ID of newly created objects using
+  `SELECT MAX(pk_name) FROM table_name`.
+
 ## 3.2 beta 1 - 2023-04-17
 
 - Added support for `JSONField`.
