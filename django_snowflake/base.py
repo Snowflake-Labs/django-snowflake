@@ -149,6 +149,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         return False
 
     def init_connection_state(self):
+        # AUTOINCREMENT IDs must be monotonically increasing in order for
+        # DatabaseOperations.last_insert_id() to fetch the correct ID.
+        with self.connection.cursor() as cursor:
+            cursor.execute("ALTER SESSION SET NOORDER_SEQUENCE_AS_DEFAULT=False")
         timezone_changed = self.ensure_timezone()
         if timezone_changed:
             # Commit after setting the time zone (see #17062)
