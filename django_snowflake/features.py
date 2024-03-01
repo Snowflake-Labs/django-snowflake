@@ -51,10 +51,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_slicing_ordering_in_compound = True
     supports_subqueries_in_group_by = False
     supports_temporal_subtraction = True
-    # This really means "supports_nested_transactions". Snowflake supports a
-    # single level of transaction, BEGIN + (ROLLBACK|COMMIT). Multiple BEGINS
-    # contribute to the current (only) transaction.
-    supports_transactions = False
+    supports_transactions = True
     # This feature is specific to the Django fork used for testing.
     supports_tz_offsets = False
     supports_virtual_generated_columns = True
@@ -133,6 +130,12 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # needs to operate as:
         #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN (PARSE_JSON('["foo", "bar"]'))
         'model_fields.test_jsonfield.TestQuerying.test_key_in',
+        # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
+        'model_fields.test_jsonfield.TestQuerying.test_literal_annotation_filtering',
+        # This isn't compatible with the SELECT ... FROM VALUES workaround
+        # for inserting JSON data. In other words, this query doesn't work:
+        # SELECT parse_json($1) FROM VALUES (DEFAULT);
+        'schema.tests.SchemaTests.test_db_default_output_field_resolving',
         # QuerySet.bulk_update() not supported for JSONField:
         # Expression type does not match column data type, expecting VARIANT
         # but got VARCHAR(16777216) for column JSON_FIELD
@@ -155,6 +158,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Zero pk validation not added yet.
         'backends.tests.MySQLPKZeroTests.test_zero_as_autoval',
         'bulk_create.tests.BulkCreateTests.test_zero_as_autoval',
+        # Snowflake returns 'The Name::42.00000'.
+        'db_functions.text.test_concat.ConcatTests.test_concat_non_str',
     }
 
     django_test_skips = {
@@ -185,21 +190,16 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
             'migrations.test_operations.OperationTests.test_add_index',
             'migrations.test_operations.OperationTests.test_alter_field_with_index',
-            'migrations.test_operations.OperationTests.test_alter_index_together',
             'migrations.test_operations.OperationTests.test_remove_index',
             'migrations.test_operations.OperationTests.test_rename_index',
-            'migrations.test_operations.OperationTests.test_rename_index_unnamed_index',
             'schema.tests.SchemaTests.test_add_remove_index',
             'schema.tests.SchemaTests.test_alter_field_add_index_to_integerfield',
-            'schema.tests.SchemaTests.test_create_index_together',
             'schema.tests.SchemaTests.test_index_together',
-            'schema.tests.SchemaTests.test_index_together_with_fk',
             'schema.tests.SchemaTests.test_indexes',
             'schema.tests.SchemaTests.test_order_index',
             'schema.tests.SchemaTests.test_remove_constraints_capital_letters',
             'schema.tests.SchemaTests.test_remove_db_index_doesnt_remove_custom_indexes',
             'schema.tests.SchemaTests.test_remove_field_unique_does_not_remove_meta_constraints',
-            'schema.tests.SchemaTests.test_remove_index_together_does_not_remove_meta_indexes',
             'schema.tests.SchemaTests.test_remove_unique_together_does_not_remove_meta_constraints',
             'schema.tests.SchemaTests.test_text_field_with_db_index',
         },
@@ -252,6 +252,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.BasicExpressionsTests.test_nested_subquery_outer_ref_2',
             'expressions.tests.BasicExpressionsTests.test_nested_subquery_outer_ref_with_autofield',
             'expressions.tests.BasicExpressionsTests.test_order_by_exists',
+            'expressions.tests.BasicExpressionsTests.test_slicing_of_outerref',
             'expressions.tests.BasicExpressionsTests.test_subquery',
             'expressions.tests.BasicExpressionsTests.test_subquery_filter_by_lazy',
             'expressions.tests.BasicExpressionsTests.test_subquery_in_filter',
@@ -291,6 +292,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'queries.tests.JoinReuseTest.test_inverted_q_across_relations',
             'queries.tests.ManyToManyExcludeTest.test_exclude_many_to_many',
             'queries.tests.ManyToManyExcludeTest.test_ticket_12823',
+            'queries.tests.Queries1Tests.test_combining_does_not_mutate',
             'queries.tests.Queries1Tests.test_double_exclude',
             'queries.tests.Queries1Tests.test_exclude',
             'queries.tests.Queries1Tests.test_exclude_in',
@@ -319,6 +321,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
         'Snowflake does not support nested transactions.': {
+            'admin_changelist.tests.ChangeListTests.test_list_editable_atomicity',
             'admin_inlines.tests.TestReadOnlyChangeViewInlinePermissions.test_add_url_not_allowed',
             'admin_views.tests.AdminViewBasicTest.test_disallowed_to_field',
             'admin_views.tests.AdminViewPermissionsTest.test_add_view',
@@ -393,11 +396,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'assertNumQueries is sometimes off because of the extra queries this '
         'backend uses to fetch an object\'s ID.': {
+            'admin_utils.test_logentry.LogEntryTests.test_log_action_fallback',
             'contenttypes_tests.test_models.ContentTypesTests.test_get_for_models_creation',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_diamond_mti',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_false',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_parent',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_with_grandparent',
+            'modeladmin.tests.ModelAdminTests.test_log_deletion_fallback',
             'model_formsets_regress.tests.FormsetTests.test_extraneous_query_is_not_run',
             'model_inheritance.tests.ModelInheritanceTests.test_create_child_no_update',
             'model_inheritance.tests.ModelInheritanceTests.test_create_diamond_mti_common_parent',
