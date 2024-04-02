@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2.3 - Unreleased
+
+* Fixed `EXISTS` subqueries by removing `LIMIT 1` (which Snowflake does not
+  support) from them.
+
 ## 4.2.2 - 2024-02-23
 
 * Fixed data corruption of new model instance IDs. Connection initialization
