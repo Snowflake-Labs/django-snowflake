@@ -133,6 +133,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # needs to operate as:
         #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN (PARSE_JSON('["foo", "bar"]'))
         'model_fields.test_jsonfield.TestQuerying.test_key_in',
+        # This isn't compatible with the SELECT ... FROM VALUES workaround
+        # for inserting JSON data. In other words, this query doesn't work:
+        # SELECT parse_json($1) FROM VALUES (DEFAULT);
+        'schema.tests.SchemaTests.test_db_default_output_field_resolving',
         # QuerySet.bulk_update() not supported for JSONField:
         # Expression type does not match column data type, expecting VARIANT
         # but got VARCHAR(16777216) for column JSON_FIELD
