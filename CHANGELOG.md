@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2.3 - Unreleased
+## 4.2.3 - 2024-04-08
 
 * Fixed `EXISTS` subqueries by removing `LIMIT 1` (which Snowflake does not
   support) from them.
