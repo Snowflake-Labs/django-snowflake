@@ -112,18 +112,6 @@ class DatabaseOperations(BaseDatabaseOperations):
             value = uuid.UUID(value)
         return value
 
-    def adapt_datetimefield_value(self, value):
-        # Work around a bug in Django: https://code.djangoproject.com/ticket/33229
-        if hasattr(value, 'resolve_expression'):
-            return value
-        return super().adapt_datetimefield_value(value)
-
-    def adapt_timefield_value(self, value):
-        # Work around a bug in Django: https://code.djangoproject.com/ticket/33229
-        if hasattr(value, 'resolve_expression'):
-            return value
-        return super().adapt_timefield_value(value)
-
     def explain_query_prefix(self, format=None, **options):
         if format is None:
             format = 'TABULAR'
