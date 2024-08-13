@@ -1,0 +1,92 @@
+name: Tests IV
+
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - '!setup.py'
+      - '.github/workflows/tests4.yml'
+
+jobs:
+  django-tests:
+    runs-on: ubuntu-latest
+    name: Django Test Suite
+    steps:
+      - name: Checkout django-snowflake
+        uses: actions/checkout@v4
+      - name: Checkout Django
+        uses: actions/checkout@v4
+        with:
+          repository: 'timgraham/django'
+          ref: 'snowflake-5.1.x'
+          path: 'django_repo'
+      - name: Install system packages for Django's Python test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libmemcached-dev
+      - name: Install Django and its Python test dependencies
+        run: |
+          pip3 install -U pip
+          cd django_repo/tests/
+          pip3 install -e ..
+          pip3 install -r requirements/py3.txt
+      - name: install the django-snowflake backend
+        run: pip3 install .
+      - name: Copy the test settings file
+        run: cp .github/workflows/snowflake_settings.py django_repo/tests/
+      - name: Run the tests
+        run: >
+          python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          model_forms
+          model_formsets
+          model_formsets_regress
+          multiple_database
+          mutually_referential
+          nested_foreign_keys
+          null_fk
+          null_fk_ordering
+          null_queries
+          one_to_one
+          ordering
+          order_with_respect_to
+          or_lookups
+          pagination
+          prefetch_related
+          properties
+          proxy_model_inheritance
+          proxy_models
+          queries
+          queryset_pickle
+          raw_query
+          reserved_names
+          reverse_lookup
+          save_delete_hooks
+          schema
+          select_for_update
+          select_related
+          select_related_onetoone
+          select_related_regress
+          serializers
+          servers
+          signals
+          sitemaps_tests
+          sites_framework
+          sites_tests
+          string_lookup
+          swappable_models
+          syndication_tests
+          test_client
+          test_client_regress
+          timezones
+          transaction_hooks
+          transactions
+          unmanaged_models
+          update
+          update_only_fields
+          validation
+          view_tests
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
