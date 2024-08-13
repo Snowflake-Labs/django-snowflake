@@ -135,6 +135,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # needs to operate as:
         #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN (PARSE_JSON('["foo", "bar"]'))
         'model_fields.test_jsonfield.TestQuerying.test_key_in',
+        # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
+        'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
+        'model_fields.test_jsonfield.TestQuerying.test_literal_annotation_filtering',
         # This isn't compatible with the SELECT ... FROM VALUES workaround
         # for inserting JSON data. In other words, this query doesn't work:
         # SELECT parse_json($1) FROM VALUES (DEFAULT);
@@ -161,6 +164,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Zero pk validation not added yet.
         'backends.tests.MySQLPKZeroTests.test_zero_as_autoval',
         'bulk_create.tests.BulkCreateTests.test_zero_as_autoval',
+        # Snowflake returns 'The Name::42.00000'.
+        'db_functions.text.test_concat.ConcatTests.test_concat_non_str',
     }
 
     django_test_skips = {
@@ -191,21 +196,16 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'introspection.tests.IntrospectionTests.test_get_constraints_index_types',
             'migrations.test_operations.OperationTests.test_add_index',
             'migrations.test_operations.OperationTests.test_alter_field_with_index',
-            'migrations.test_operations.OperationTests.test_alter_index_together',
             'migrations.test_operations.OperationTests.test_remove_index',
             'migrations.test_operations.OperationTests.test_rename_index',
-            'migrations.test_operations.OperationTests.test_rename_index_unnamed_index',
             'schema.tests.SchemaTests.test_add_remove_index',
             'schema.tests.SchemaTests.test_alter_field_add_index_to_integerfield',
-            'schema.tests.SchemaTests.test_create_index_together',
             'schema.tests.SchemaTests.test_index_together',
-            'schema.tests.SchemaTests.test_index_together_with_fk',
             'schema.tests.SchemaTests.test_indexes',
             'schema.tests.SchemaTests.test_order_index',
             'schema.tests.SchemaTests.test_remove_constraints_capital_letters',
             'schema.tests.SchemaTests.test_remove_db_index_doesnt_remove_custom_indexes',
             'schema.tests.SchemaTests.test_remove_field_unique_does_not_remove_meta_constraints',
-            'schema.tests.SchemaTests.test_remove_index_together_does_not_remove_meta_indexes',
             'schema.tests.SchemaTests.test_remove_unique_together_does_not_remove_meta_constraints',
             'schema.tests.SchemaTests.test_text_field_with_db_index',
         },
@@ -251,6 +251,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake: Window function type [ROW_NUMBER] requires ORDER BY in '
         'window specification.': {
              'expressions_window.tests.WindowFunctionTests.test_row_number_no_ordering',
+             'prefetch_related.tests.PrefetchLimitTests.test_empty_order',
         },
         # https://github.com/Snowflake-Labs/django-snowflake/issues/40
         'DatabaseOperations.sequence_reset_sql() must be implemented for this test.': {
@@ -262,6 +263,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'db_functions.comparison.test_cast.CastTests.test_cast_to_char_field_with_max_length',
         },
         'Snowflake does not support nested transactions.': {
+            'admin_changelist.tests.ChangeListTests.test_list_editable_atomicity',
             'admin_inlines.tests.TestReadOnlyChangeViewInlinePermissions.test_add_url_not_allowed',
             'admin_views.tests.AdminViewBasicTest.test_disallowed_to_field',
             'admin_views.tests.AdminViewPermissionsTest.test_add_view',
@@ -336,11 +338,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'assertNumQueries is sometimes off because of the extra queries this '
         'backend uses to fetch an object\'s ID.': {
+            'admin_utils.test_logentry.LogEntryTests.test_log_action_fallback',
             'contenttypes_tests.test_models.ContentTypesTests.test_get_for_models_creation',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_diamond_mti',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_false',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_parent',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_with_grandparent',
+            'modeladmin.tests.ModelAdminTests.test_log_deletion_fallback',
             'model_formsets_regress.tests.FormsetTests.test_extraneous_query_is_not_run',
             'model_inheritance.tests.ModelInheritanceTests.test_create_child_no_update',
             'model_inheritance.tests.ModelInheritanceTests.test_create_diamond_mti_common_parent',
