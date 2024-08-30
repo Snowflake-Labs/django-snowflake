@@ -71,9 +71,14 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             }
         # Primary keys
         cursor.execute(f'SHOW PRIMARY KEYS IN TABLE {table_name}')
-        for row in cursor.fetchall():
-            constraints[self.identifier_converter(row[6])] = {
-                'columns': [self.identifier_converter(row[4])],
+        # Sort by key_sequence so columns appear in the correct order.
+        pk_rows = sorted(cursor.fetchall(), key=lambda row: row[5])
+        if pk_rows:
+            columns = [self.identifier_converter(row[4]) for row in pk_rows]
+            # Constraint names are all the same. Use the first one.
+            constraint_name = self.identifier_converter(pk_rows[0][6])
+            constraints[constraint_name] = {
+                'columns': columns,
                 'primary_key': True,
                 'unique': False,
                 'foreign_key': None,
