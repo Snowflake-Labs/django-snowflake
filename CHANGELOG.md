@@ -1,5 +1,5 @@
 # Changelog
 
-## 5.1 - 2024-08-14
+## 5.2 - Unreleased
 
-Initial release for Django 5.1.x.
+Initial release for Django 5.2.x.
