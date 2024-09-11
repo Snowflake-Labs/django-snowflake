@@ -3,9 +3,9 @@
 ## Install and usage
 
 Use the version of django-snowflake that corresponds to your version of
-Django. For example, to get the latest compatible release for Django 5.0.x:
+Django. For example, to get the latest compatible release for Django 5.1.x:
 
-`pip install django-snowflake==5.0.*`
+`pip install django-snowflake==5.1.*`
 
 The minor release number of Django doesn't correspond to the minor release
 number of django-snowflake. Use the latest minor release of each.
@@ -95,12 +95,6 @@ if you encounter an issue worth documenting.
   backend inappropriate for use in web app use cases where multiple clients
   could be creating objects at the same time. Further, you should not manually
   specify an ID (e.g. `MyModel(id=1)`) when creating an object.
-
-* Snowflake only supports single layer transactions, but Django's `TestCase`
-  requires that the database supports nested transactions. Therefore, Django's
-  `TestCase` operates like `TransactionTestCase`, without the benefit of
-  transactions to speed it up. Starting in Django 5.1, `TestCase` uses
-  Snowflake's single layer transaction support to give some speed up.
 
 * Due to snowflake-connector-python's [lack of VARIANT support](https://github.com/snowflakedb/snowflake-connector-python/issues/244),
   some `JSONField` queries with complex JSON parameters [don't work](https://github.com/Snowflake-Labs/django-snowflake/issues/58).

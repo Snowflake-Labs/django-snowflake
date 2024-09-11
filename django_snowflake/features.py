@@ -132,9 +132,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # needs to operate as:
         #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN (PARSE_JSON('["foo", "bar"]'))
         'model_fields.test_jsonfield.TestQuerying.test_key_in',
-        # To debug:
-        'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
         # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
+        'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
         'model_fields.test_jsonfield.TestQuerying.test_literal_annotation_filtering',
         # This isn't compatible with the SELECT ... FROM VALUES workaround
         # for inserting JSON data. In other words, this query doesn't work:
@@ -249,6 +248,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake: Window function type [ROW_NUMBER] requires ORDER BY in '
         'window specification.': {
              'expressions_window.tests.WindowFunctionTests.test_row_number_no_ordering',
+             'prefetch_related.tests.PrefetchLimitTests.test_empty_order',
         },
         # https://github.com/Snowflake-Labs/django-snowflake/issues/40
         'DatabaseOperations.sequence_reset_sql() must be implemented for this test.': {
