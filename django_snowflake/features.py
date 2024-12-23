@@ -134,6 +134,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'model_fields.test_jsonfield.TestQuerying.test_key_in',
         # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
         'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
+        'model_fields.test_jsonfield.TestQuerying.test_has_key_literal_lookup',
         'model_fields.test_jsonfield.TestQuerying.test_literal_annotation_filtering',
         # This isn't compatible with the SELECT ... FROM VALUES workaround
         # for inserting JSON data. In other words, this query doesn't work:
@@ -195,6 +196,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'migrations.test_operations.OperationTests.test_alter_field_with_index',
             'migrations.test_operations.OperationTests.test_remove_index',
             'migrations.test_operations.OperationTests.test_rename_index',
+            'migrations.test_operations.OperationTests.test_rename_index_unnamed_index',
             'schema.tests.SchemaTests.test_add_remove_index',
             'schema.tests.SchemaTests.test_alter_field_add_index_to_integerfield',
             'schema.tests.SchemaTests.test_index_together',
