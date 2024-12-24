@@ -164,6 +164,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'bulk_create.tests.BulkCreateTests.test_zero_as_autoval',
         # Snowflake returns 'The Name::42.00000'.
         'db_functions.text.test_concat.ConcatTests.test_concat_non_str',
+        # To debug (wrong results):
+        # https://github.com/django/django/commit/b28438f379049e5ee1a89067e9cc14b7d0da07c
+        "model_fields.test_jsonfield.TestQuerying.test_lookups_special_chars",
+        # SQL compilation error: syntax error line 1 at position 279 unexpected 'MODEL_FIELDS_NULLABLEJSONMODEL'.
+        "model_fields.test_jsonfield.TestQuerying.test_lookups_special_chars_double_quotes",
     }
 
     django_test_skips = {
@@ -176,6 +181,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake does not enforce UNIQUE constraints.': {
             'auth_tests.test_basic.BasicTestCase.test_unicode_username',
             'auth_tests.test_migrations.ProxyModelWithSameAppLabelTests.test_migrate_with_existing_target_permission',
+            'composite_pk.tests.CompositePKTests.test_error_on_comment_pk_conflict',
+            'composite_pk.tests.CompositePKTests.test_error_on_user_pk_conflict',
             'constraints.tests.UniqueConstraintTests.test_database_constraint',
             'contenttypes_tests.test_operations.ContentTypeOperationsTests.test_content_type_rename_conflict',
             'contenttypes_tests.test_operations.ContentTypeOperationsTests.test_existing_content_type_rename',
@@ -238,6 +245,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'expressions.tests.FTimeDeltaTests.test_date_subquery_subtraction',
             'expressions.tests.FTimeDeltaTests.test_datetime_subquery_subtraction',
             'expressions_window.tests.WindowFunctionTests.test_subquery_row_range_rank',
+            'foreign_object.test_tuple_lookups.TupleLookupsTests.test_in_subquery',
             'lookup.tests.LookupQueryingTests.test_filter_subquery_lhs',
             'lookup.tests.LookupTests.test_nested_outerref_lhs',
             'model_fields.test_jsonfield.TestQuerying.test_nested_key_transform_on_subquery',
