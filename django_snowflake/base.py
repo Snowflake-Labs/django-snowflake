@@ -49,7 +49,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         'SmallIntegerField': 'NUMBER(5,0)',
         'TextField': 'VARCHAR',
         'TimeField': 'TIME',
-        'UUIDField': 'VARCHAR(32)',
+        'UUIDField': 'VARCHAR(36)',
     }
     data_types_suffix = {
         'AutoField': 'AUTOINCREMENT',
