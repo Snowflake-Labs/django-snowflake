@@ -12,7 +12,7 @@ class DatabaseClient(BaseDatabaseClient):
 
         account = settings_dict.get('ACCOUNT')
         dbname = settings_dict.get('NAME')
-        host = settings_dict.get('HOST')
+        host = settings_dict.get('HOST') 
         password = settings_dict.get('PASSWORD')
         schema = settings_dict.get('SCHEMA')
         user = settings_dict.get('USER')
@@ -28,6 +28,8 @@ class DatabaseClient(BaseDatabaseClient):
         private_key_file_pwd = options.get('private_key_file_pwd')
         role = options.get('role')
         token = options.get('token')
+        if not token and os.environ.get('SNOWFLAKE_SERVICE_NAME'): ##for fetching token if not provided in options parameter (SPCS connection).
+            token = open("/snowflake/session/token", "r").read()
 
         if account:
             args += ['-a', account]
