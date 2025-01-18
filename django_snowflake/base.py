@@ -152,18 +152,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 conn_params['user'] = settings_dict['USER']
             else:
                 raise ImproperlyConfigured(self.settings_is_missing % 'USER')
-                
-        # if conn_params['is_spcs_connection']:
-        #     conn_params["token"] = self.get_login_token()
-        #     if settings_dict['HOST']:
-        #         conn_params['host'] = settings_dict['HOST']
-
-        # if not conn_params['is_spcs_connection']:
-        #     if settings_dict['USER']:
-        #         conn_params['user'] = settings_dict['USER']
-        #     else:
-        #         raise ImproperlyConfigured(self.settings_is_missing % 'USER')
-
         return conn_params
 
     @async_unsafe
