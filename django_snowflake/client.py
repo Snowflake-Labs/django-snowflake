@@ -12,7 +12,7 @@ class DatabaseClient(BaseDatabaseClient):
 
         account = settings_dict.get('ACCOUNT')
         dbname = settings_dict.get('NAME')
-        host = settings_dict.get('HOST') 
+        host = settings_dict.get('HOST', os.environ.get('SNOWFLAKE_HOST')) ###for fetching host if not provided in options parameter (SPCS connection).
         password = settings_dict.get('PASSWORD')
         schema = settings_dict.get('SCHEMA')
         user = settings_dict.get('USER')
