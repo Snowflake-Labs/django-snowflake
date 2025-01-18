@@ -110,20 +110,9 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         if os.environ.get('RUNNING_DJANGOS_TEST_SUITE') != 'true':
             conn_params['application'] = 'Django_SnowflakeConnector_%s' % __version__
 
-        if conn_params['is_spcs_connection']:
-            conn_params["token"] = self.get_login_token()
-            if settings_dict['HOST']:
-                conn_params['host'] = settings_dict['HOST']
-        
         if settings_dict['NAME']:
-            conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])
-
-        if not conn_params['is_spcs_connection']:
-            if settings_dict['USER']:
-                conn_params['user'] = settings_dict['USER']
-            else:
-                raise ImproperlyConfigured(self.settings_is_missing % 'USER')
-
+            conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])        
+        
         if settings_dict['PASSWORD']:
             conn_params['password'] = settings_dict['PASSWORD']
         elif all(x not in conn_params for x in self.password_not_required_options):
@@ -143,6 +132,27 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['schema'] = self.ops.quote_name(settings_dict['SCHEMA'])
         else:
             raise ImproperlyConfigured(self.settings_is_missing % 'SCHEMA')
+
+        if os.environ.get('SNOWFLAKE_SERVICE_NAME'):
+            conn_params['token'] = self.get_login_token()
+            conn_params['host'] = os.environ.get('SNOWFLAKE_HOST')
+            
+        if not os.environ.get('SNOWFLAKE_SERVICE_NAME'):
+            if settings_dict['USER']:
+                conn_params['user'] = settings_dict['USER']
+            else:
+                raise ImproperlyConfigured(self.settings_is_missing % 'USER')
+                
+        # if conn_params['is_spcs_connection']:
+        #     conn_params["token"] = self.get_login_token()
+        #     if settings_dict['HOST']:
+        #         conn_params['host'] = settings_dict['HOST']
+
+        # if not conn_params['is_spcs_connection']:
+        #     if settings_dict['USER']:
+        #         conn_params['user'] = settings_dict['USER']
+        #     else:
+        #         raise ImproperlyConfigured(self.settings_is_missing % 'USER')
 
         return conn_params
 
