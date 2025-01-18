@@ -132,10 +132,20 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['schema'] = self.ops.quote_name(settings_dict['SCHEMA'])
         else:
             raise ImproperlyConfigured(self.settings_is_missing % 'SCHEMA')
+        
+        token = settings_dict['OPTIONS'].get('token')
+        if not token and os.environ.get('SNOWFLAKE_SERVICE_NAME'):  # SPCS fallback if no token in settings
+            token =  self.get_login_token()
 
-        if os.environ.get('SNOWFLAKE_SERVICE_NAME'):
-            conn_params['token'] = self.get_login_token()
-            conn_params['host'] = os.environ.get('SNOWFLAKE_HOST')
+        if token:
+            conn_params['token'] = token
+        
+        host = settings_dict.get('HOST')
+        if not host and os.environ.get('SNOWFLAKE_SERVICE_NAME'): # SPCS fallback if no host in settings
+            host = os.environ.get('SNOWFLAKE_HOST')
+            
+        if host:
+            conn_params['host'] = host
             
         if not os.environ.get('SNOWFLAKE_SERVICE_NAME'):
             if settings_dict['USER']:
