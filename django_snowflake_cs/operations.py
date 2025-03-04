@@ -13,7 +13,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         'BigAutoField': 'NUMBER',
         'SmallAutoField': 'NUMBER',
     }
-    compiler_module = 'django_snowflake.compiler'
+    compiler_module = 'django_snowflake_cs.compiler'
     explain_prefix = 'EXPLAIN USING'
 
     def bulk_insert_sql(self, fields, placeholder_rows):

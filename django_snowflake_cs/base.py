@@ -1,7 +1,8 @@
 import os
+import traceback
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.backends.base.base import BaseDatabaseWrapper
+from django.db.backends.base.base import NO_DB_ALIAS, BaseDatabaseWrapper
 from django.utils.asyncio import async_unsafe
 
 try:
@@ -17,7 +18,7 @@ from .features import DatabaseFeatures                      # NOQA isort:skip
 from .introspection import DatabaseIntrospection            # NOQA isort:skip
 from .operations import DatabaseOperations                  # NOQA isort:skip
 from .schema import DatabaseSchemaEditor                    # NOQA isort:skip
-
+from .pool import SnowflakeConnectionPool
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = 'snowflake'
@@ -93,6 +94,17 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     password_not_required_options = ('private_key', 'private_key_file', 'authenticator')
     settings_is_missing = "settings.DATABASES is missing '%s' for 'django_snowflake'."
 
+    connection_pool = {}
+
+    def is_pooling(self):
+        pool_options = self.settings_dict['OPTIONS'].get('pool')
+        return pool_options == True
+
+    def close_pool(self):
+        pass
+        # if DatabaseWrapper.connection_pool:
+        #     DatabaseWrapper.connection_pool.close()
+
     def get_connection_params(self):
         settings_dict = self.settings_dict
         conn_params = {
@@ -127,16 +139,28 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
         if settings_dict.get('SCHEMA'):
             conn_params['schema'] = self.ops.quote_name(settings_dict['SCHEMA'])
-        else:
-            raise ImproperlyConfigured(self.settings_is_missing % 'SCHEMA')
+        # else:
+        #     raise ImproperlyConfigured(self.settings_is_missing % 'SCHEMA')
 
         return conn_params
 
     @async_unsafe
     def get_new_connection(self, conn_params):
+        if self.alias != NO_DB_ALIAS and self.is_pooling:
+            if self.alias in DatabaseWrapper.connection_pool:
+                pool = DatabaseWrapper.connection_pool[self.alias]
+            else:
+                print('creating new pool')
+                pool = SnowflakeConnectionPool(conn_params)
+                DatabaseWrapper.connection_pool.setdefault(self.alias, pool) 
+
+            return pool.get()
+
         return Database.connect(**conn_params)
 
     def ensure_timezone(self):
+        # TODO: Postgres closes the pool here?
+        # self.close_pool()
         if self.connection is None:
             return False
         with self.connection.cursor() as cursor:
@@ -147,6 +171,16 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                 cursor.execute("ALTER SESSION SET TIMEZONE=%s", [timezone_name])
             return True
         return False
+    
+    def _close(self):
+        if self.connection is not None:
+            with self.wrap_database_errors:
+                if self.alias in DatabaseWrapper.connection_pool:
+                    print(self.alias)
+                    DatabaseWrapper.connection_pool[self.alias].put(self.connection)
+                    self.connection = None
+                else:
+                    return self.connection.close()
 
     def init_connection_state(self):
         # AUTOINCREMENT IDs must be monotonically increasing in order for
