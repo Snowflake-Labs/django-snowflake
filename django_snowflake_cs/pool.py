@@ -1,12 +1,14 @@
 import snowflake.connector as snow
 from contextlib import contextmanager
 from gevent import queue
+import time
 
 class SnowflakeConnectionPool:
-    def __init__(self, conn_params: dict, maxsize: int = 100):
+    def __init__(self, conn_params: dict, maxsize: int = 100, pool_timeout: int = 3600):
         self.maxsize = maxsize
         self.pool = queue.Queue(maxsize=maxsize)
         self.conn_params = conn_params
+        self.pool_timeout = pool_timeout
 
     @contextmanager
     def connection(self):
@@ -41,7 +43,8 @@ class SnowflakeConnectionPool:
             conn = None
 
         if conn is None:
-            conn = self.create_connection()
+            conn = self._create_connection()
+            conn._pool_timeout = int(time.time()) + self.pool_timeout
 
         conn._pool = self
 
@@ -49,11 +52,15 @@ class SnowflakeConnectionPool:
 
     def put(self, item: snow.SnowflakeConnection):
         try:
-            self.pool.put_nowait(item)
+            current_time = int(time.time())
+            if item._pool_timeout <= current_time:
+                item.close()
+            else:
+                self.pool.put_nowait(item)
         except queue.Full:
             item.close()
 
-    def create_connection(self) -> snow.SnowflakeConnection:
+    def _create_connection(self) -> snow.SnowflakeConnection:
         print('creating connection')
         conn = snow.connect(**self.conn_params)
         return conn
