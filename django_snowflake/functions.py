@@ -1,6 +1,6 @@
 from django.db.models.functions import (
-    SHA224, SHA256, SHA384, SHA512, Ceil, Collate, ConcatPair, Random,
-    StrIndex,
+    SHA224, SHA256, SHA384, SHA512, Ceil, Collate, ConcatPair, JSONArray,
+    Random, StrIndex,
 )
 
 
@@ -26,6 +26,10 @@ def concatpair(self, compiler, connection, **extra_context):
     return self.coalesce().as_sql(compiler, connection, **extra_context)
 
 
+def json_array(self, compiler, connection, **extra_context):
+    return self.as_sql(compiler, connection, function="ARRAY_CONSTRUCT", **extra_context)
+
+
 def random(self, compiler, connection, **extra_context):
     template = 'UNIFORM(0, 0.99999999999999999, RANDOM())'
     return self.as_sql(compiler, connection, template=template, **extra_context)
@@ -48,5 +52,6 @@ def register_functions():
     Ceil.as_snowflake = ceil
     Collate.as_snowflake = collate
     ConcatPair.as_snowflake = concatpair
+    JSONArray.as_snowflake = json_array
     Random.as_snowflake = random
     StrIndex.as_snowflake = strindex
