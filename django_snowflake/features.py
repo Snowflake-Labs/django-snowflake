@@ -16,7 +16,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     create_test_procedure_with_int_param_sql = """
         CREATE OR REPLACE PROCEDURE test_procedure(value integer) RETURNS varchar LANGUAGE PYTHON
             HANDLER = 'run'
-            RUNTIME_VERSION = '3.8'
+            RUNTIME_VERSION = '3.12'
             PACKAGES = ('snowflake-snowpark-python')
         AS
         $$def run(session, value): pass
