@@ -92,7 +92,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     password_not_required_options = ('private_key', 'private_key_file', 'authenticator')
     settings_is_missing = "settings.DATABASES is missing '%s' for 'django_snowflake'."
-
+    
+    def get_login_token(self):
+      """
+      Read the login token supplied automatically by Snowflake. These tokens
+      are short lived and should always be read right before creating any new connection.
+      """
+      with open("/snowflake/session/token", "r") as f:
+        return f.read()
+    
     def get_connection_params(self):
         settings_dict = self.settings_dict
         conn_params = {
@@ -103,13 +111,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['application'] = 'Django_SnowflakeConnector_%s' % __version__
 
         if settings_dict['NAME']:
-            conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])
-
-        if settings_dict['USER']:
-            conn_params['user'] = settings_dict['USER']
-        else:
-            raise ImproperlyConfigured(self.settings_is_missing % 'USER')
-
+            conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])        
+        
         if settings_dict['PASSWORD']:
             conn_params['password'] = settings_dict['PASSWORD']
         elif all(x not in conn_params for x in self.password_not_required_options):
@@ -129,7 +132,26 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params['schema'] = self.ops.quote_name(settings_dict['SCHEMA'])
         else:
             raise ImproperlyConfigured(self.settings_is_missing % 'SCHEMA')
+        
+        token = settings_dict['OPTIONS'].get('token')
+        if not token and os.environ.get('SNOWFLAKE_SERVICE_NAME'):  # SPCS fallback if no token in settings
+            token =  self.get_login_token()
 
+        if token:
+            conn_params['token'] = token
+        
+        host = settings_dict.get('HOST')
+        if not host and os.environ.get('SNOWFLAKE_SERVICE_NAME'): # SPCS fallback if no host in settings
+            host = os.environ.get('SNOWFLAKE_HOST')
+            
+        if host:
+            conn_params['host'] = host
+            
+        if not os.environ.get('SNOWFLAKE_SERVICE_NAME'):
+            if settings_dict['USER']:
+                conn_params['user'] = settings_dict['USER']
+            else:
+                raise ImproperlyConfigured(self.settings_is_missing % 'USER')
         return conn_params
 
     @async_unsafe
