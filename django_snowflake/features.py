@@ -303,6 +303,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'transaction_hooks.tests.TestConnectionOnCommit.test_discards_hooks_from_rolled_back_savepoint',
             'transaction_hooks.tests.TestConnectionOnCommit.test_inner_savepoint_rolled_back_with_outer',
             'transaction_hooks.tests.TestConnectionOnCommit.test_inner_savepoint_does_not_affect_outer',
+            'update_only_fields.tests.UpdateOnlyFieldsTests.test_update_fields_not_updated',
         },
         'Unused DatabaseIntrospection.get_sequences() not implemented.': {
             'introspection.tests.IntrospectionTests.test_sequence_list',
@@ -356,14 +357,12 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'assertNumQueries is sometimes off because of the extra queries this '
         'backend uses to fetch an object\'s ID.': {
-            'admin_utils.test_logentry.LogEntryTests.test_log_action_fallback',
             'admin_utils.test_logentry.LogEntryTests.test_log_actions_single_object_param',
             'contenttypes_tests.test_models.ContentTypesTests.test_get_for_models_creation',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_diamond_mti',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_false',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_parent',
             'force_insert_update.tests.ForceInsertInheritanceTests.test_force_insert_with_grandparent',
-            'modeladmin.tests.ModelAdminTests.test_log_deletion_fallback',
             'model_formsets_regress.tests.FormsetTests.test_extraneous_query_is_not_run',
             'model_inheritance.tests.ModelInheritanceTests.test_create_child_no_update',
             'model_inheritance.tests.ModelInheritanceTests.test_create_diamond_mti_common_parent',
