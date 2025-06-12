@@ -1,3 +1,4 @@
+from django.db import NotSupportedError
 from django.db.models.fields.json import (
     HasKeyLookup, KeyTextTransform, KeyTransform,
 )
@@ -15,8 +16,14 @@ def compile_json_path(key_transforms):
             transform = transform.replace('"', '\\"')
             json_path += f'{separator}"{transform}"'
         else:
-            # An integer lookup is an array index.
-            json_path += f'[{idx}]'
+            if idx < 0:
+                raise NotSupportedError(
+                    "Using negative JSON array indices is not supported on this "
+                    "database backend."
+                )
+            else:
+                # An integer lookup is an array index.
+                json_path += f'[{idx}]'
     # Escape percent literals since snowflake-connector-python uses
     # interpolation to bind parameters.
     return json_path.replace('%', '%%')
@@ -51,7 +58,7 @@ def has_key_lookup(self, compiler, connection):
             rhs_key_transforms = [key]
         *rhs_key_transforms, final_key = rhs_key_transforms
         rhs_json_path = compile_json_path(rhs_key_transforms)
-        final_key = self.compile_json_path_final_key(final_key)
+        final_key = self.compile_json_path_final_key(connection, final_key)
         # If this is the only key, the separator must be a colon.
         if rhs_json_path == '':
             final_key = final_key.replace('.', ':', 1)

@@ -45,6 +45,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supports_json_field_contains = False
     # This feature is specific to the Django fork used for testing.
     supports_limit_in_exists = False
+    supports_json_negative_indexing = False
     supports_over_clause = True
     supports_partial_indexes = False
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
@@ -173,6 +174,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'model_fields.test_jsonfield.TestSaveLoad.test_bulk_update_custom_get_prep_value',
         # AssertionError: possibly a server bug that returns the array as a string?
         'db_functions.json.test_json_array.JSONArrayTests.test_expressions',
+        # LISTAGG returns empty string rather than NULL
+        'aggregation.tests.AggregateTestCase.test_stringagg_default_value',
     }
 
     django_test_skips = {
@@ -230,6 +233,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'aggregation.tests.AggregateAnnotationPruningTests.test_referenced_subquery_requires_wrapping',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation',
             'aggregation.tests.AggregateTestCase.test_aggregation_subquery_annotation_values',
+            'aggregation.tests.AggregateTestCase.test_string_agg_filter_in_subquery',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_filter_with_subquery',
             'annotations.tests.NonAggregateAnnotationTestCase.test_annotation_subquery_outerref_transform',
             'composite_pk.test_filter.CompositePKFilterTests.test_outer_ref_pk',
