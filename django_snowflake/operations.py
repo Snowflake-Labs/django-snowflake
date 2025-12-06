@@ -119,7 +119,7 @@ class DatabaseOperations(BaseDatabaseOperations):
         return prefix + ' ' + format
 
     def last_executed_query(self, cursor, sql, params):
-        return cursor.query
+        return cursor.query or super().last_executed_query(cursor, sql, params)
 
     def last_insert_id(self, cursor, table_name, pk_name):
         # This is subject to race conditions.

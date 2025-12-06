@@ -4,6 +4,8 @@ from django.db.backends.base.creation import BaseDatabaseCreation
 
 
 class DatabaseCreation(BaseDatabaseCreation):
+    destroy_test_db_connection_close_method = 'close'
+
     def _quote_name(self, name):
         return self.connection.ops.quote_name(name)
 

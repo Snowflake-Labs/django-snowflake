@@ -126,7 +126,11 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         table_name = self.connection.ops.quote_name(table_name)
         cursor.execute(f'SHOW IMPORTED KEYS IN TABLE {table_name}')
         return {
-            self.identifier_converter(row[8]): (self.identifier_converter(row[4]), self.identifier_converter(row[3]))
+            self.identifier_converter(row[8]): (
+                self.identifier_converter(row[4]),
+                self.identifier_converter(row[3]),
+                self.on_delete_types["NO ACTION"],
+            )
             for row in cursor.fetchall()
         }
 
