@@ -190,7 +190,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Snowflake does not enforce UNIQUE constraints.': {
             'auth_tests.test_basic.BasicTestCase.test_unicode_username',
-            'auth_tests.test_management.PermissionRenameOperationsTests.test_rename_permission_conflict',
             'auth_tests.test_migrations.ProxyModelWithSameAppLabelTests.test_migrate_with_existing_target_permission',
             'composite_pk.test_create.CompositePKCreateTests.test_save_default_pk_set',
             'composite_pk.tests.CompositePKTests.test_error_on_comment_pk_conflict',
