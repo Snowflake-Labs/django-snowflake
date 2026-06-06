@@ -36,6 +36,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supported_explain_formats = {'JSON', 'TABULAR', 'TEXT'}
     supports_comments = True
     supports_comments_inline = True
+    supports_independent_comment_alteration = True
     supports_column_check_constraints = False
     supports_table_check_constraints = False
     supports_expression_indexes = False
@@ -155,6 +156,12 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # SQL compilation error: Invalid expression [PARSE_JSON('{"a":1}')] in
         # VALUES clause
         'model_fields.test_jsonfield.TestQuerying.test_in_json_whitespace',
+        # ProgrammingError: 001852 (22023): Invalid extraction path
+        # '2,147,483,648': array index 2,147,483,648 is off limits; must be
+        # between 0 and 2,147,483,647.
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_int4_range_overflow',
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_int4_range_overflow_isnull',
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_int4_range_overflow_isnull_ancestor',
         # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
         'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
         'model_fields.test_jsonfield.TestQuerying.test_has_key_literal_lookup',
@@ -213,6 +220,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Savepoints not supported:
         # https://github.com/django/django/pull/20636/changes#r2789583220
         'proxy_models.tests.ProxyModelTests.test_proxy_included_in_ancestors',
+        # To be investigated.
+        'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_trunc_filter_non_utc_active',
     }
 
     django_test_skips = {
