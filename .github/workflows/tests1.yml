@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 'Snowflake-Labs/django'
-          ref: 'snowflake-6.1.x'
+          ref: 'snowflake-6.2.x'
           path: 'django_repo'
           persist-credentials: false
       - name: Install system packages for Django's Python test dependencies
