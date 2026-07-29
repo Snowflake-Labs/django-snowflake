@@ -96,7 +96,7 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         if collation:
             sql += self._collate_sql(collation)
         if field.generated:
-            sql += self._column_generated_sql(field)
+            sql += self._column_generated_sql(field, db_params["type"])
         if not field.null and not exclude_not_null:
             sql += " NOT NULL"
         # Add database default.
@@ -160,11 +160,17 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
                 },
             })
 
-    def _column_generated_sql(self, field):
+    def _column_generated_sql(self, field, db_type):
         """Return the SQL to use in a GENERATED ALWAYS clause."""
         expression_sql, params = field.generated_sql(self.connection)
         if params:
             expression_sql = expression_sql % tuple(self.quote_value(p) for p in params)
+        # Snowflake requires the expression's data type to match the column's
+        # declared data type. This can fail for NUMBER types since, e.g., an
+        # IntegerField subtraction can infer NUMBER(11,0) while the column is
+        # declared NUMBER(10,0). Cast the expression to make it match.
+        if db_type.startswith("NUMBER"):
+            expression_sql = f"CAST({expression_sql} AS {db_type})"
         return f" AS ({expression_sql})"
 
     def quote_value(self, value):
