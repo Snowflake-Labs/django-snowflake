@@ -7,6 +7,10 @@
   column's declared precision, e.g. when the expression involves arithmetic on
   NUMBER columns.
 
+- Allow a user-provided ``DATABASES[...]['OPTIONS']['application']``. In older
+  versions, the default value (``"Django_SnowflakeConnector_X.Y.Z"``) cannot be
+  overridden.
+
 ## 6.0 - 2025-12-05
 
 Initial release for Django 6.0.x.

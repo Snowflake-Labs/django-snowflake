@@ -100,7 +100,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             **settings_dict['OPTIONS'],
         }
         if os.environ.get('RUNNING_DJANGOS_TEST_SUITE') != 'true':
-            conn_params['application'] = 'Django_SnowflakeConnector_%s' % __version__
+            conn_params.setdefault('application', 'Django_SnowflakeConnector_%s' % __version__)
 
         if settings_dict['NAME']:
             conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])
