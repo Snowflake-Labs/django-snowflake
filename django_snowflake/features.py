@@ -172,6 +172,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         "model_fields.test_jsonfield.TestQuerying.test_lookups_special_chars",
         # SQL compilation error: syntax error line 1 at position 279 unexpected 'MODEL_FIELDS_NULLABLEJSONMODEL'.
         "model_fields.test_jsonfield.TestQuerying.test_lookups_special_chars_double_quotes",
+        # Snowflake does not support unquoted periods in table names:
+        # SQL compilation error: syntax error line 1 at position 217 unexpected '.'.
+        "ordering.tests.OrderingTests.test_alias_with_period_shadows_table_name",
         # expecting VARIANT but got VARCHAR(16777216) for column JSON_FIELD
         'expressions.tests.BasicExpressionsTests.test_update_jsonfield_case_when_key_is_null',
         'model_fields.test_jsonfield.TestSaveLoad.test_bulk_update_custom_get_prep_value',
@@ -288,6 +291,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'admin_changelist.tests.ChangeListTests.test_list_editable_atomicity',
             'admin_inlines.tests.TestReadOnlyChangeViewInlinePermissions.test_add_url_not_allowed',
             'admin_views.tests.AdminViewBasicTest.test_disallowed_to_field',
+            'admin_views.tests.AdminViewListEditable.test_forged_post_submission_when_no_add_permission',
             'admin_views.tests.AdminViewPermissionsTest.test_add_view',
             'admin_views.tests.AdminViewPermissionsTest.test_change_view',
             'admin_views.tests.AdminViewPermissionsTest.test_change_view_save_as_new',
