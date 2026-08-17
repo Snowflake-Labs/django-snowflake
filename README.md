@@ -73,6 +73,11 @@ DATABASES = {
   `PositiveIntegerField` model fields allow negative values (though validation
   at the form level still works).
 
+- Only virtual `GeneratedField` columns (`db_persist=False`) are supported by
+  Snowflake, not stored ones. In addition, `GeneratedField` must be defined
+  with `null=True` since Snowflake doesn't support adding a `NOT NULL`
+  constraint to virtual columns.
+
 ## Notes on Django QuerySets
 
 * Snowflake has
