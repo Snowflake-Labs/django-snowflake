@@ -1,6 +1,6 @@
 # Changelog
 
-## 6.0.1 - Unreleased
+## 6.0.1 - 2026-08-18
 
 - Fix crash creating virtual ``GeneratedField`` columns with a NUMBER type
   where the generated expression's inferred precision doesn't match the
