@@ -90,8 +90,26 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     introspection_class = DatabaseIntrospection
     ops_class = DatabaseOperations
 
-    password_not_required_options = ('private_key', 'private_key_file', 'authenticator')
+    password_not_required_options = ('private_key', 'private_key_file', 'authenticator', 'token')
     settings_is_missing = "settings.DATABASES is missing '%s' for 'django_snowflake'."
+
+    def get_login_token(self):
+        """
+        Read the login token supplied automatically by Snowpark Container
+        Services (SPCS). These tokens are short lived and should always be
+        read right before creating a new connection.
+        """
+        try:
+            with open('/snowflake/session/token') as f:
+                return f.read()
+        except FileNotFoundError:
+            raise ImproperlyConfigured(
+                "Could not read the Snowpark Container Services (SPCS) login "
+                "token from /snowflake/session/token. This file is provided "
+                "automatically inside an SPCS service; if you're not running "
+                "in SPCS, unset the SNOWFLAKE_SERVICE_NAME environment "
+                "variable or set DATABASES[...]['OPTIONS']['token']."
+            )
 
     def get_connection_params(self):
         settings_dict = self.settings_dict
@@ -105,10 +123,24 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         if settings_dict['NAME']:
             conn_params['database'] = self.ops.quote_name(settings_dict['NAME'])
 
+        # Inside a Snowpark Container Services (SPCS) service, Snowflake
+        # provides the OAuth token and host automatically, and USER isn't
+        # required.
+        running_in_spcs = bool(os.environ.get('SNOWFLAKE_SERVICE_NAME'))
+
+        host = settings_dict.get('HOST')
+        if not host and running_in_spcs:
+            host = os.environ.get('SNOWFLAKE_HOST')
+        if host:
+            conn_params['host'] = host
+
         if settings_dict['USER']:
             conn_params['user'] = settings_dict['USER']
-        else:
+        elif not running_in_spcs:
             raise ImproperlyConfigured(self.settings_is_missing % 'USER')
+
+        if not conn_params.get('token') and running_in_spcs:
+            conn_params['token'] = self.get_login_token()
 
         if settings_dict['PASSWORD']:
             conn_params['password'] = settings_dict['PASSWORD']

@@ -1,3 +1,4 @@
+import os
 import signal
 
 from django.db.backends.base.client import BaseDatabaseClient
@@ -6,13 +7,14 @@ from django.db.backends.base.client import BaseDatabaseClient
 class DatabaseClient(BaseDatabaseClient):
     executable_name = 'snowsql'
 
-    @classmethod
-    def settings_to_cmd_args_env(cls, settings_dict, parameters):
-        args = [cls.executable_name]
+    def settings_to_cmd_args_env(self, settings_dict, parameters):
+        args = [self.executable_name]
 
         account = settings_dict.get('ACCOUNT')
         dbname = settings_dict.get('NAME')
-        host = settings_dict.get('HOST')
+        # Fall back to the host Snowflake provides inside a Snowpark
+        # Container Services (SPCS) service.
+        host = settings_dict.get('HOST') or os.environ.get('SNOWFLAKE_HOST')
         password = settings_dict.get('PASSWORD')
         schema = settings_dict.get('SCHEMA')
         user = settings_dict.get('USER')
@@ -28,6 +30,10 @@ class DatabaseClient(BaseDatabaseClient):
         private_key_file_pwd = options.get('private_key_file_pwd')
         role = options.get('role')
         token = options.get('token')
+        if not token and os.environ.get('SNOWFLAKE_SERVICE_NAME'):
+            # Read the login token Snowflake provides automatically inside
+            # an SPCS service.
+            token = self.connection.get_login_token()
 
         if account:
             args += ['-a', account]

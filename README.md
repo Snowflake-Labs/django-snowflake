@@ -56,6 +56,20 @@ DATABASES = {
 }
 ```
 
+## Snowpark Container Services (SPCS) connections
+
+When your Django app runs inside a [Snowpark Container
+Services](https://docs.snowflake.com/en/developer-guide/snowpark-container-services/overview)
+(SPCS) service, Snowflake automatically provides an OAuth login token and a
+host for connecting to Snowflake. django-snowflake detects this environment
+using the `SNOWFLAKE_SERVICE_NAME` environment variable that Snowflake sets for
+every service container. In that case, it:
+
+* Falls back to the token at `/snowflake/session/token` if `OPTIONS['token']`
+  isn't set. This token is short-lived and is re-read for each new connection.
+* Falls back to the `SNOWFLAKE_HOST` environment variable if `HOST` isn't set.
+* Doesn't require `USER` to be set.
+
 ## Notes on Django fields
 
 - Consistent with [Snowflake's convention](https://docs.snowflake.com/en/sql-reference/identifiers-syntax.html),
