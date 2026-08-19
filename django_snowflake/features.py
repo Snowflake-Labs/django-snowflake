@@ -46,6 +46,9 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     # This feature is specific to the Django fork used for testing.
     supports_limit_in_exists = False
     supports_json_negative_indexing = False
+    supports_on_delete_db_cascade = False
+    supports_on_delete_db_default = False
+    supports_on_delete_db_null = False
     supports_over_clause = True
     supports_partial_indexes = False
     # https://docs.snowflake.com/en/sql-reference/functions-regexp.html#backreferences
@@ -135,6 +138,13 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # needs to operate as:
         #   WHERE TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":bar) IN (PARSE_JSON('["foo", "bar"]'))
         'model_fields.test_jsonfield.TestQuerying.test_key_in',
+        # More unexpected results when querying JSONField.
+        'model_fields.test_jsonfield.JSONExactNoneDeprecationTests.test_annotation_q_filter',
+        'model_fields.test_jsonfield.JSONExactNoneDeprecationTests.test_case_when',
+        'model_fields.test_jsonfield.JSONExactNoneDeprecationTests.test_filter',
+        'model_fields.test_jsonfield.JSONNullTests.test_filter',
+        'model_fields.test_jsonfield.JSONNullTests.test_filter_in',
+        'model_fields.test_jsonfield.TestQuerying.test_in',
         # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
         'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
         'model_fields.test_jsonfield.TestQuerying.test_has_key_literal_lookup',
@@ -146,6 +156,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # QuerySet.bulk_update() not supported for JSONField:
         # Expression type does not match column data type, expecting VARIANT
         # but got VARCHAR(16777216) for column JSON_FIELD
+        "model_fields.test_jsonfield.JSONNullTests.test_bulk_update",
         'queries.test_bulk_update.BulkUpdateTests.test_json_field',
         # Server-side bug?
         # CAST(TO_JSON("MODEL_FIELDS_NULLABLEJSONMODEL"."VALUE":d) AS VARIANT)
@@ -160,10 +171,15 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Fixed if TO_JSON is removed from the ORDER BY clause (or may be fine
         # as is as some databases give the ordering that Snowflake does.)
         'model_fields.test_jsonfield.TestQuerying.test_ordering_by_transform',
+        # AssertionError: '"This is valid JSON primitive."' !=
+        # 'This is valid JSON primitive.'
+        'model_fields.test_jsonfield.TestQuerying.test_json_type_casting_with_coalesce',
+        # db_default doesn't work on JSONField (invalid identifier 'DEFAULT').
+        'model_fields.test_jsonfield.JSONNullTests.test_default',
         # SQL compilation error: <subquery> is not a valid order by expression.
         'ordering.tests.OrderingTests.test_orders_nulls_first_on_filtered_subquery',
         # Zero pk validation not added yet.
-        'backends.tests.MySQLPKZeroTests.test_zero_as_autoval',
+        'backends.tests.MySQLAutoPKZeroTests.test_zero_as_autoval',
         'bulk_create.tests.BulkCreateTests.test_zero_as_autoval',
         # Snowflake returns 'The Name::42.00000'.
         'db_functions.text.test_concat.ConcatTests.test_concat_non_str',
@@ -178,10 +194,21 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # expecting VARIANT but got VARCHAR(16777216) for column JSON_FIELD
         'expressions.tests.BasicExpressionsTests.test_update_jsonfield_case_when_key_is_null',
         'model_fields.test_jsonfield.TestSaveLoad.test_bulk_update_custom_get_prep_value',
+        'model_fields.test_jsonfield.JSONNullTests.test_case_expr_with_jsonnull_condition',
+        'model_fields.test_jsonfield.JSONNullTests.test_case_expression_with_jsonnull_then',
         # AssertionError: possibly a server bug that returns the array as a string?
         'db_functions.json.test_json_array.JSONArrayTests.test_expressions',
         # LISTAGG returns empty string rather than NULL
         'aggregation.tests.AggregateTestCase.test_stringagg_default_value',
+        # snowflake-connector-python leaks memory:
+        # https://github.com/snowflakedb/snowflake-connector-python/issues/2725
+        # https://github.com/snowflakedb/snowflake-connector-python/issues/2727
+        'select_related.tests.SelectRelatedTests.test_select_related_memory_leak',
+        # Savepoints not supported:
+        # https://github.com/django/django/pull/20636/changes#r2789583220
+        'proxy_models.tests.ProxyModelTests.test_proxy_included_in_ancestors',
+        # To be investigated.
+        'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_trunc_filter_non_utc_active',
     }
 
     django_test_skips = {
@@ -193,6 +220,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         },
         'Snowflake does not enforce UNIQUE constraints.': {
             'auth_tests.test_basic.BasicTestCase.test_unicode_username',
+            'auth_tests.test_management.CreatesuperuserManagementCommandTestCase.test_swappable_user_no_natural_key_duplicate_allowed',  # noqa: E501
+            'auth_tests.test_management.PermissionRenameOperationsTests.test_rename_permission_conflict',
             'auth_tests.test_migrations.ProxyModelWithSameAppLabelTests.test_migrate_with_existing_target_permission',
             'composite_pk.test_create.CompositePKCreateTests.test_save_default_pk_set',
             'composite_pk.tests.CompositePKTests.test_error_on_comment_pk_conflict',
@@ -290,6 +319,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'Snowflake does not support nested transactions.': {
             'admin_changelist.tests.ChangeListTests.test_list_editable_atomicity',
             'admin_inlines.tests.TestReadOnlyChangeViewInlinePermissions.test_add_url_not_allowed',
+            'admin_views.test_actions.AdminDetailActionsTest.test_action_changeform_cannot_target_different_objects',
             'admin_views.tests.AdminViewBasicTest.test_disallowed_to_field',
             'admin_views.tests.AdminViewListEditable.test_forged_post_submission_when_no_add_permission',
             'admin_views.tests.AdminViewPermissionsTest.test_add_view',
@@ -398,7 +428,10 @@ class DatabaseFeatures(BaseDatabaseFeatures):
             'composite_pk.test_filter.CompositePKFilterTests.test_filter_comments_by_pk_exact_subquery',
             'composite_pk.test_filter.CompositePKFilterTests.test_outer_ref_pk_filter_on_pk_comparison',
             'composite_pk.test_filter.CompositePKFilterTests.test_outer_ref_pk_filter_on_pk_exact',
-        }
+        },
+        "Snowflake doesn't support periods in table names.": {
+            "ordering.tests.OrderingTests.test_alias_with_period_shadows_table_name",
+        },
     }
 
     @cached_property

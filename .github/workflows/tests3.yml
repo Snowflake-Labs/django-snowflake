@@ -1,14 +1,11 @@
-name: Tests
+name: Tests III
 
 on:
   pull_request:
     paths:
       - '**.py'
       - '!setup.py'
-      - '.github/workflows/tests.yml'
-
-permissions:
-  contents: read
+      - '.github/workflows/tests3.yml'
 
 jobs:
   django-tests:
@@ -17,15 +14,12 @@ jobs:
     steps:
       - name: Checkout django-snowflake
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Checkout Django
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 'Snowflake-Labs/django'
-          ref: 'snowflake-6.0.x'
+          ref: 'snowflake-6.2.x'
           path: 'django_repo'
-          persist-credentials: false
       - name: Install system packages for Django's Python test dependencies
         run: |
           sudo apt-get update
@@ -43,27 +37,54 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
-          aggregation
-          aggregation_regress
-          annotations
-          backends
-          basic
-          bulk_create
-          composite_pk
-          dates
-          datetimes
-          db_functions
-          expressions
-          expressions_window
           field_defaults
+          field_subclassing
+          file_storage
+          file_uploads
+          filtered_relation
+          force_insert_update
+          foreign_object
+          forms_tests
+          from_db_value
+          generic_inline_admin
+          generic_relations
+          generic_relations_regress
+          generic_views
+          get_earliest_or_latest
+          get_object_or_404
+          get_or_create
+          i18n
+          inline_formsets
           inspectdb
           introspection
+          invalid_models_tests
+          known_related_objects
           lookup
+          m2m_and_m2o
+          m2m_intermediary
+          m2m_multiple
+          m2m_recursive
+          m2m_regress
+          m2m_signals
+          m2m_through
+          m2m_through_regress
+          m2o_recursive
+          managers_regress
+          many_to_many
+          many_to_one
+          many_to_one_null
+          max_lengths
+          migrate_signals
           migrations
+          migration_test_data_persistence
+          modeladmin
+          model_inheritance
+          model_inheritance_regress
+          model_meta
+          model_options
+          model_package
+          model_regress
           model_fields
-          queries
-          schema
-          timezones
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
