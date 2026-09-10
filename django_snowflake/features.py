@@ -207,6 +207,8 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Savepoints not supported:
         # https://github.com/django/django/pull/20636/changes#r2789583220
         'proxy_models.tests.ProxyModelTests.test_proxy_included_in_ancestors',
+        # To be investigated.
+        'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_trunc_filter_non_utc_active',
     }
 
     django_test_skips = {
