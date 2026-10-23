@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-snowflake"
+dynamic = ["version"]
+description = "Django backend for Snowflake"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+maintainers = [
+    {name = "Tim Graham", email = "timograham@gmail.com"},
+]
+requires-python = ">=3.12"
+dependencies = [
+    "django >= 6.1, < 6.2",
+    "snowflake-connector-python >= 3.6.0",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Django",
+    "Framework :: Django :: 6.1",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/Snowflake-Labs/django-snowflake"
+Source = "https://github.com/Snowflake-Labs/django-snowflake"
+Tracker = "https://github.com/Snowflake-Labs/django-snowflake/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "django_snowflake.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["django_snowflake*"]
+
+[tool.isort]
+combine_as_imports = true
+default_section = "THIRDPARTY"
+include_trailing_comma = true
+line_length = 79
+multi_line_output = 5
