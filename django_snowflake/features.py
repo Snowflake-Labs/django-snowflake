@@ -1,6 +1,7 @@
+from functools import cached_property
+
 from django.db import InterfaceError
 from django.db.backends.base.features import BaseDatabaseFeatures
-from django.utils.functional import cached_property
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
@@ -35,6 +36,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     supported_explain_formats = {'JSON', 'TABULAR', 'TEXT'}
     supports_comments = True
     supports_comments_inline = True
+    supports_independent_comment_alteration = True
     supports_column_check_constraints = False
     supports_table_check_constraints = False
     supports_expression_indexes = False
@@ -79,10 +81,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Subquery issue to be investigated.
         'lookup.tests.LookupTests.test_exact_exists',
         'lookup.tests.LookupQueryingTests.test_filter_exists_lhs',
-        # "Binding data in type (event) is not supported." To be investigated.
-        'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
-        # Binding data in type (safestring) is not supported.
-        'i18n.tests.TestModels.test_safestr',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
@@ -100,6 +98,14 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'schema.tests.SchemaTests.test_alter_int_pk_to_autofield_pk',
         'schema.tests.SchemaTests.test_alter_int_pk_to_bigautofield_pk',
         'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
+        # Empty SQL not skipped by snowflake-connector-python resulting in
+        # 000006: Invalid Snowflake response. Snowflake responded with error
+        # status: 400 Bad Request, message: Unexpected response, body length 0.
+        # https://github.com/snowflakedb/drivers/issues/1372
+        'schema.tests.SchemaTests.test_alter_field_o2o_to_fk',
+        'schema.tests.SchemaTests.test_alter_o2o_to_fk',
+        'schema.tests.SchemaTests.test_alter_to_fk',
+        'schema.tests.SchemaTests.test_unique',
         # Interval math with NULL crashes:
         # https://github.com/Snowflake-Labs/django-snowflake/issues/26
         'expressions.tests.FTimeDeltaTests.test_date_subtraction',
@@ -145,6 +151,17 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'model_fields.test_jsonfield.JSONNullTests.test_filter',
         'model_fields.test_jsonfield.JSONNullTests.test_filter_in',
         'model_fields.test_jsonfield.TestQuerying.test_in',
+        'model_fields.test_jsonfield.TestQuerying.test_in_value_explicit_output_field',
+        'model_fields.test_jsonfield.TestQuerying.test_in_value_without_explicit_output_field',
+        # SQL compilation error: Invalid expression [PARSE_JSON('{"a":1}')] in
+        # VALUES clause
+        'model_fields.test_jsonfield.TestQuerying.test_in_json_whitespace',
+        # ProgrammingError: 001852 (22023): Invalid extraction path
+        # '2,147,483,648': array index 2,147,483,648 is off limits; must be
+        # between 0 and 2,147,483,647.
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_int4_range_overflow',
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_int4_range_overflow_isnull',
+        'model_fields.test_jsonfield.TestQuerying.test_key_transform_int4_range_overflow_isnull_ancestor',
         # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
         'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
         'model_fields.test_jsonfield.TestQuerying.test_has_key_literal_lookup',
@@ -200,13 +217,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'db_functions.json.test_json_array.JSONArrayTests.test_expressions',
         # LISTAGG returns empty string rather than NULL
         'aggregation.tests.AggregateTestCase.test_stringagg_default_value',
-        # snowflake-connector-python leaks memory:
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/2725
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/2727
-        'select_related.tests.SelectRelatedTests.test_select_related_memory_leak',
         # Savepoints not supported:
         # https://github.com/django/django/pull/20636/changes#r2789583220
         'proxy_models.tests.ProxyModelTests.test_proxy_included_in_ancestors',
+        # To be investigated.
+        'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_trunc_filter_non_utc_active',
     }
 
     django_test_skips = {
