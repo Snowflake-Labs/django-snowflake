@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Django
         uses: actions/checkout@v4
         with:
-          repository: 'timgraham/django'
+          repository: 'Snowflake-Labs/django'
           ref: 'snowflake-5.2.x'
           path: 'django_repo'
       - name: Install system packages for Django's Python test dependencies
