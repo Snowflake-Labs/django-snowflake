@@ -145,6 +145,11 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'model_fields.test_jsonfield.JSONNullTests.test_filter',
         'model_fields.test_jsonfield.JSONNullTests.test_filter_in',
         'model_fields.test_jsonfield.TestQuerying.test_in',
+        'model_fields.test_jsonfield.TestQuerying.test_in_value_explicit_output_field',
+        'model_fields.test_jsonfield.TestQuerying.test_in_value_without_explicit_output_field',
+        # SQL compilation error: Invalid expression [PARSE_JSON('{"a":1}')] in
+        # VALUES clause
+        'model_fields.test_jsonfield.TestQuerying.test_in_json_whitespace',
         # Invalid argument types for function 'GET': (VARCHAR(14), VARCHAR(3))
         'constraints.tests.CheckConstraintTests.test_validate_jsonfield_exact',
         'model_fields.test_jsonfield.TestQuerying.test_has_key_literal_lookup',
