@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 maintainers = [
-    {name = "Tim Graham", email = "timograham@gmail.com"},
+    {name = "Snowflake, Inc", email = "snowflake-python-libraries-dl@snowflake.com"},
 ]
 requires-python = ">=3.12"
 dependencies = [
