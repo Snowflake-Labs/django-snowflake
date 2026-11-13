@@ -79,10 +79,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         # Subquery issue to be investigated.
         'lookup.tests.LookupTests.test_exact_exists',
         'lookup.tests.LookupQueryingTests.test_filter_exists_lhs',
-        # "Binding data in type (event) is not supported." To be investigated.
-        'model_fields.test_charfield.TestCharField.test_assignment_from_choice_enum',
-        # Binding data in type (safestring) is not supported.
-        'i18n.tests.TestModels.test_safestr',
         # Invalid argument types for function '+': (INTERVAL, TIMESTAMP_NTZ(9))
         'expressions.tests.FTimeDeltaTests.test_delta_add',
         # DatabaseOperations.format_for_duration_arithmetic() INTERVAL syntax
@@ -205,10 +201,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'db_functions.json.test_json_array.JSONArrayTests.test_expressions',
         # LISTAGG returns empty string rather than NULL
         'aggregation.tests.AggregateTestCase.test_stringagg_default_value',
-        # snowflake-connector-python leaks memory:
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/2725
-        # https://github.com/snowflakedb/snowflake-connector-python/issues/2727
-        'select_related.tests.SelectRelatedTests.test_select_related_memory_leak',
         # Savepoints not supported:
         # https://github.com/django/django/pull/20636/changes#r2789583220
         'proxy_models.tests.ProxyModelTests.test_proxy_included_in_ancestors',
