@@ -8,6 +8,8 @@ try:
     import snowflake.connector as Database
 except ImportError as e:
     raise ImproperlyConfigured("Error loading snowflake connector module: %s" % e)
+else:
+    from snowflake.connector.version import VERSION as connector_version
 
 # Some of these import snowflake connector, so import them after checking if it's installed.
 from . import __version__                                   # NOQA isort:skip
@@ -117,6 +119,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             'interpolate_empty_sequences':  True,
             **settings_dict['OPTIONS'],
         }
+        if connector_version >= (5,):
+            # Django doesn't run asynchronous queries, so there's no need to
+            # check for them before logging out. Setting this silences a
+            # FutureWarning from snowflake-connector-python 5.x if the option
+            # isn't set.
+            conn_params.setdefault('enable_server_session_keep_alive_auto_detection', False)
         if os.environ.get('RUNNING_DJANGOS_TEST_SUITE') != 'true':
             conn_params.setdefault('application', 'Django_SnowflakeConnector_%s' % __version__)
 
