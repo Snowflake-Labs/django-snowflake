@@ -222,10 +222,6 @@ class DatabaseFeatures(BaseDatabaseFeatures):
         'proxy_models.tests.ProxyModelTests.test_proxy_included_in_ancestors',
         # To be investigated.
         'db_functions.datetime.test_extract_trunc.DateFunctionWithTimeZoneTests.test_trunc_filter_non_utc_active',
-        # Extracting from Value(date/datetime/time) crashes:
-        # SQL compilation error: Function EXTRACT does not support
-        # VARCHAR(10) argument type
-        'annotations.tests.NonAggregateAnnotationTestCase.test_values_annotation_with_transform',
     }
 
     django_test_skips = {
