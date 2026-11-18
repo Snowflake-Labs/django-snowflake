@@ -37,6 +37,38 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          aggregation
+          aggregation_regress
+          annotations
+          auth_tests
+          backends
+          basic
+          bulk_create
+          cache
+          check_framework
+          composite_pk
+          constraints
+          contenttypes_tests
+          custom_columns
+          custom_lookups
+          custom_managers
+          custom_methods
+          custom_pk
+          datatypes
+          dates
+          datetimes
+          db_functions
+          db_typecasts
+          db_utils
+          defer
+          defer_regress
+          delete
+          delete_regress
+          empty
+          expressions
+          expressions_case
+          expressions_window
+          extra_regress
           field_defaults
           field_subclassing
           file_storage
@@ -54,37 +86,6 @@ jobs:
           get_object_or_404
           get_or_create
           i18n
-          inline_formsets
-          inspectdb
-          introspection
-          invalid_models_tests
-          known_related_objects
-          lookup
-          m2m_and_m2o
-          m2m_intermediary
-          m2m_multiple
-          m2m_recursive
-          m2m_regress
-          m2m_signals
-          m2m_through
-          m2m_through_regress
-          m2o_recursive
-          managers_regress
-          many_to_many
-          many_to_one
-          many_to_one_null
-          max_lengths
-          migrate_signals
-          migrations
-          migration_test_data_persistence
-          modeladmin
-          model_inheritance
-          model_inheritance_regress
-          model_meta
-          model_options
-          model_package
-          model_regress
-          model_fields
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}

@@ -37,36 +37,7 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
-          annotations
-          auth_tests
-          backends
-          basic
-          bulk_create
-          cache
-          check_framework
-          composite_pk
-          constraints
-          contenttypes_tests
-          custom_columns
-          custom_lookups
-          custom_managers
-          custom_methods
-          custom_pk
-          datatypes
-          dates
-          datetimes
-          db_functions
-          db_typecasts
-          db_utils
-          defer
-          defer_regress
-          delete
-          delete_regress
-          empty
-          expressions
-          expressions_case
-          expressions_window
-          extra_regress
+          admin_views
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}

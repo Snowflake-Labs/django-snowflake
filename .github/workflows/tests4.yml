@@ -37,6 +37,37 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          inline_formsets
+          inspectdb
+          introspection
+          invalid_models_tests
+          known_related_objects
+          lookup
+          m2m_and_m2o
+          m2m_intermediary
+          m2m_multiple
+          m2m_recursive
+          m2m_regress
+          m2m_signals
+          m2m_through
+          m2m_through_regress
+          m2o_recursive
+          managers_regress
+          many_to_many
+          many_to_one
+          many_to_one_null
+          max_lengths
+          migrate_signals
+          migrations
+          migration_test_data_persistence
+          modeladmin
+          model_inheritance
+          model_inheritance_regress
+          model_meta
+          model_options
+          model_package
+          model_regress
+          model_fields
           model_forms
           model_formsets
           model_formsets_regress
