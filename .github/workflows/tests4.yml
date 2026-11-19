@@ -37,6 +37,12 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          migration_test_data_persistence
+          modeladmin
+          model_inheritance
+          model_inheritance_regress
+          model_meta
+          model_options
           model_package
           model_regress
           model_fields

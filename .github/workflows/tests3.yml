@@ -37,6 +37,21 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          defer
+          defer_regress
+          delete
+          delete_regress
+          empty
+          expressions
+          expressions_case
+          expressions_window
+          extra_regress
+          field_defaults
+          field_subclassing
+          file_storage
+          file_uploads
+          filtered_relation
+          force_insert_update
           foreign_object
           forms_tests
           from_db_value
@@ -70,12 +85,6 @@ jobs:
           max_lengths
           migrate_signals
           migrations
-          migration_test_data_persistence
-          modeladmin
-          model_inheritance
-          model_inheritance_regress
-          model_meta
-          model_options
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
