@@ -37,11 +37,6 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
-          aggregation
-          aggregation_regress
-          annotations
-          auth_tests
-          backends
           basic
           bulk_create
           cache

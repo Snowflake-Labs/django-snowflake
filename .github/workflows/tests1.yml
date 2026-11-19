@@ -51,6 +51,11 @@ jobs:
           admin_ordering
           admin_utils
           admin_views
+          aggregation
+          aggregation_regress
+          annotations
+          auth_tests
+          backends
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
