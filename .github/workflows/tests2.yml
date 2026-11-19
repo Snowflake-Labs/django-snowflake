@@ -37,6 +37,8 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
+          aggregation_regress
+          annotations
           auth_tests
           backends
           basic
@@ -57,6 +59,7 @@ jobs:
           db_functions
           db_typecasts
           db_utils
+          defer
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}

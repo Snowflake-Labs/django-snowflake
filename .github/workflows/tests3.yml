@@ -37,7 +37,6 @@ jobs:
       - name: Run the tests
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
-          defer
           defer_regress
           delete
           delete_regress
@@ -80,11 +79,6 @@ jobs:
           m2o_recursive
           managers_regress
           many_to_many
-          many_to_one
-          many_to_one_null
-          max_lengths
-          migrate_signals
-          migrations
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
