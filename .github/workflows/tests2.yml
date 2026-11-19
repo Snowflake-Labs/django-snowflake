@@ -1,14 +1,11 @@
-name: Tests
+name: Tests II
 
 on:
   pull_request:
     paths:
       - '**.py'
       - '!setup.py'
-      - '.github/workflows/tests.yml'
-
-permissions:
-  contents: read
+      - '.github/workflows/tests2.yml'
 
 jobs:
   django-tests:
@@ -17,15 +14,12 @@ jobs:
     steps:
       - name: Checkout django-snowflake
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Checkout Django
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 'Snowflake-Labs/django'
-          ref: 'snowflake-6.1.x'
+          ref: 'snowflake-6.2.x'
           path: 'django_repo'
-          persist-credentials: false
       - name: Install system packages for Django's Python test dependencies
         run: |
           sudo apt-get update
@@ -44,26 +38,6 @@ jobs:
         run: >
           python3 django_repo/tests/runtests.py --settings snowflake_settings -v 2
           aggregation
-          aggregation_regress
-          annotations
-          backends
-          basic
-          bulk_create
-          composite_pk
-          dates
-          datetimes
-          db_functions
-          expressions
-          expressions_window
-          field_defaults
-          inspectdb
-          introspection
-          lookup
-          migrations
-          model_fields
-          queries
-          schema
-          timezones
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
